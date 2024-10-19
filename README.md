@@ -1,43 +1,48 @@
-# RegMonkey Python Template
+# CmdStan for Regression Monkey
 
-This repository contains a template for creating Python projects using RegMonkey.
+Welcome to the CmdStan for Regression Monkey repository! This project provides a set of tools and examples for performing regression analysis using CmdStan, the command-line interface for Stan.
 
 ## Table of Contents
+
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Examples](#examples)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Introduction
-RegMonkey Python Template is a starting point for creating Python projects that utilize RegMonkey, a powerful library for monkey patching and dynamic code modification.
 
-<strong > &#9654;&nbsp; GitHub Template</strong>
-
-- To create a template repository, you must create a repository, then make the repository a template
-- GitHub template repository cannot include files stored using Git LFS
-- In order to set up a new template, go to your github repository, select **Settings**, and select **Template repository**
-
+CmdStan for Regression Monkey is designed to help users perform regression analysis with ease. It leverages the powerful Stan modeling language and provides a streamlined interface for running regression models.
 
 ## Installation
-To use this template, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/ryonak/regmonkey_python_template.git`
-2. Install the required dependencies: `pip install -r requirements.txt`
+To get started, clone this repository and install CmdStan:
+
+```bash
+git clone https://github.com/yourusername/cmdstan_for_regression_monkey.git
+cd cmdstan_for_regression_monkey
+```
+
+Follow the [CmdStan installation guide](https://mc-stan.org/users/interfaces/cmdstan) to set up CmdStan on your system.
 
 ## Usage
 
-<strong > &#9654;&nbsp; Task List at GitHub Repository Push</strong>
+After installing CmdStan, you can run regression models using the provided scripts and examples. Here is a basic example:
 
-- [ ] export poetry managed packages into `requirements.txt`
-
-```zsh
-% cd <repository root>
-% poetry export --without-hashes --format=requirements.txt --output requirements.txt
+```bash
+cd examples
+./run_regression.sh
 ```
 
+## Examples
+
+The `examples` directory contains various regression models and datasets. Explore these examples to understand how to set up and run different types of regression analyses.
+
 ## Contributing
-Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.
+
+We welcome contributions! Please read our [contributing guidelines](CONTRIBUTING.md) to get started.
 
 ## License
-This project is licensed under the [MIT License](LICENSE).
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

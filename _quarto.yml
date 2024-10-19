@@ -1,11 +1,13 @@
 project:
   type: book
   output-dir: _book
+  preview:
+    port: 3000
 
 book:
-  title: "Sample for Regression Monkeys"
-  # repo-url: https://github.com/RyoNakagami/statistics-for-regression-monkey
-  # site-url: https://ryonakagami.github.io/statistics-for-regression-monkey/
+  title: "cmdstanpy for Regression Monkeys"
+  repo-url: https://github.com/RyoNakagami/cmdstan_for_regression_monkey
+  site-url: https://ryonakagami.github.io/cmdstan_for_regression_monkey/
   # google-analytics: 
   #   tracking-id: "G-QEFX7FVCDM"
   favicon: ./img/favicon.ico
