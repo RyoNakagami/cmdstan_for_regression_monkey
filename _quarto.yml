@@ -1,0 +1,70 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Sample for Regression Monkeys"
+  # repo-url: https://github.com/RyoNakagami/statistics-for-regression-monkey
+  # site-url: https://ryonakagami.github.io/statistics-for-regression-monkey/
+  # google-analytics: 
+  #   tracking-id: "G-QEFX7FVCDM"
+  favicon: ./img/favicon.ico
+  sharing: twitter
+  sidebar:
+      tools:
+       - text: Blog Series
+         icon: book
+         menu:
+         - text: Ryo's Tech Blog
+           href: https://ryonakagami.github.io/
+           aria-label: blog-general
+         - text: stats for regmonkey
+           href: https://ryonakagami.github.io/statistics-for-regression-monkey/
+           aria-label: blog-regmonkey        
+         - text: statistics dojo
+           href: https://ryonakagami.github.io/statistics_dojo/
+           aria-label: blog-regmonkey
+         - text: OhGoshGit!?!
+           href: https://ohgoshgit.github.io/
+           aria-label: blog-ogg
+    
+  repo-actions: [edit, issue]
+  page-footer:
+    center:
+      - text: "© Copyright RyoNak"
+      - text: "License"
+        href: LICENSE
+  chapters:
+    - index.qmd
+
+  # appendices: 
+    # - 
+
+format:
+  html:
+    include-in-header: 
+      - include/setup_googletagmanager.html
+      - include/custom_webfont.html
+    include-in-body: include/setup_googletagmanager_body.html
+    include-after-body: include/custom_section.html
+    lang: ja_JP.UTF-8
+    number-depth: 1
+    jupyter: python3
+    theme: 
+      light: 
+        - cosmo
+        - include/custom.scss
+        - include/light.scss
+      dark: 
+        - darkly
+        - include/custom.scss
+        - include/dark.scss
+    code-copy: true
+    code-fold: true
+    code-overflow: wrap
+    date-format: "iso"
+    bibliography: references.bib
+    biblatexoptions: bibstyle=jauthoryear,citestyle=numeric,natbib=true
+    csl: reference.csl
+    mainfont: "Noto Sans JP"
+    monofont: monospace

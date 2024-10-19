@@ -1,0 +1,54 @@
+---
+jupyter: python3
+author: "Ryo Nakagami"
+date: "2024-07-20"
+date-modified: last-modified
+number_sections: false
+code-fold: true
+# when you run this file locally, do not forget to run poetry shell
+---
+
+# Welcome {.unnumbered}
+
+このQuarto Bookは以下のシリーズと連動して運用されています:
+
+|Blog Series|内容|
+|:---:|:---|
+|[Ryo's Tech Blog](https://ryonakagami.github.io/)|日々の徒然日記，Linuxまわりや開発お作法を主に取り扱う|
+|[Statistics for Regression Monkeys](https://ryonakagami.github.io/statistics-for-regression-monkey/)|数理統計学入門ノート|
+|[OhGoshGit!?!](https://ohgoshgit.github.io/)|Git trouble-shooting note|
+|[statistics dojo](https://ryonakagami.github.io/statistics_dojo/)|統計学基礎問題練習ノート, Rを主に扱う|
+
+### What is it about?
+
+データ分析を学ぶ及び実践するにあたって５つの観点があると考えています：
+
+1. 
+
+このQuarto Bookではチャプターごとに各事項にフォーカスしてノートをまとめています．
+
+<strong > &#9654;&nbsp; プログラミング言語</strong>
+
+- 主にPython 3.11.8 + [poetry](https://python-poetry.org/) を用います
+- ケースに応じて，Rを用いる場合もあります
+- 分析コードは[Repository](<repository url>)のqmdファイルがそのままソースコードとなっています
+
+参考として以下のようにコードブロックと合わせて出力されます．
+
+```{python}
+#| code-fold: show
+print("Hallo World")
+```
+
+### Contributions
+
+- ノートに関してBUG/Typos/不正確な表記を見つけた場合，まず[GitHub Issues](<repository url>/issues/new)でIssue Raiseしていただけると助かります
+- 各ノートの末尾に `utteranc.es` を用いたコメント欄があります．こちらはGitHub Discussionsと接続されておりますので，各ノートに関してはこちらも適宜ご利用ください
+
+修正の必要性の判断は[RyoNak](https://github.com/RyoNakagami)が最終的には判断しますが，広く議論できたら幸いです
+
+
+References
+----------
+::: {#refs}
+:::
