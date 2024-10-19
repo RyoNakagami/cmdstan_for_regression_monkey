@@ -8,8 +8,8 @@ book:
   title: "cmdstanpy for Regression Monkeys"
   repo-url: https://github.com/RyoNakagami/cmdstan_for_regression_monkey
   site-url: https://ryonakagami.github.io/cmdstan_for_regression_monkey/
-  # google-analytics: 
-  #   tracking-id: "G-QEFX7FVCDM"
+  google-analytics: 
+    tracking-id: "G-LCHP8F033K"
   favicon: ./img/favicon.ico
   sharing: twitter
   sidebar:

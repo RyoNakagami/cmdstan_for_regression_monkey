@@ -34,6 +34,11 @@ first need to run
 % quarto publish gh-pages
 ```
 
+<strong > &#9654;&nbsp; Python Packages</strong>
+
+```zsh
+% poetry export --without-hashes --format=requirements.txt --output requirements.txt --with quarto_env
+```
 
 
 ## Examples
