@@ -26,14 +26,15 @@ cd cmdstan_for_regression_monkey
 
 Follow the [CmdStan installation guide](https://mc-stan.org/users/interfaces/cmdstan) to set up CmdStan on your system.
 
-## Usage
+## Publish
 
-After installing CmdStan, you can run regression models using the provided scripts and examples. Here is a basic example:
+first need to run
 
-```bash
-cd examples
-./run_regression.sh
+```zsh
+% quarto publish gh-pages
 ```
+
+
 
 ## Examples
 
