@@ -1,0 +1,1 @@
+Sitemap: https://ryonakagami.github.io/cmdstan_for_regression_monkey/sitemap.xml
