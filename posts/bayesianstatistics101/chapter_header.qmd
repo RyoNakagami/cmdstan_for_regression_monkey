@@ -1,5 +1,5 @@
 ---
-title: "Bayesian statisticsの考え方"
+title: "Bayesian methods"
 author: "Ryo Nakagami"
 date: "2024-11-01"
 date-modified: last-modified
@@ -10,3 +10,35 @@ comments:
          repo: RyoNakagami/statistics-for-regression-monkey
          label: discussion
 ---
+
+## ベイズ法の考え方
+
+ある集団の特性がパラメーター $\theta$ として表現されるとします．集団の一部についてデータ $y$ が観測されたとき，
+その $y$ からの情報はパラメーター $\theta$ についての不確実性(uncertainty)を減らすことになります．
+ベイズ推測(Bayesian inference)とはこの不確実性の変化を測ることが直接的な目的となります．
+
+<strong > &#9654;&nbsp; 事前分布と事後分布</strong>
+
+標本空間 $\mathcal{Y}$, パラメーター空間 $\Theta$ としたとき，ベイズ学習は $y, \theta$ に関する信念を
+$\mathcal{Y}$ と $\Theta$ の確率分布によって表現するところから始まります．
+
+まず，$\theta\in\Theta$ について事前分布 $p(\theta)$ を設定します．
+$p(\theta)$ は，$\theta$ が母集団の真の特性を表すとどれだけ分析者が信じているか？を表していると解釈できます．
+
+データ $y$ が観測された後，ベイズルールに従って $\theta$ に関する信念を更新します．このとき現れるのが事後分布 $p(\theta\vert y)$
+ですが，これはデータ $y$ が観測された後に $\theta$ が真の値であるとどれだけ信じているかを表すことに対応しています．
+
+<div class="blog-custom-border">
+<strong>Def: 確率(probability)</strong> <br>
+
+ベイズ法における確率(probability) は，未知の量について人々の持つ情報や信念(belief)を表すものと解釈される．
+
+</div><br>
+
+<strong > &#9654;&nbsp; ベイズルール</strong>
+
+$$
+p(\theta\vert y) = \frac{p(y\vert \theta)p(\theta)}{\int_{\Theta}p(y\vert \tilde\theta)p(\tilde\theta)\,\mathrm{d}\tilde\theta}
+$$
+
+ベイズルールが示している内容は．事後分布がどうあるべきかではなく，**新たな情報を得たときに事後分布はどう変化すべきか？**です．

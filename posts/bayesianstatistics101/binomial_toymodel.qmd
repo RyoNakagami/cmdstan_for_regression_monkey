@@ -1,0 +1,37 @@
+---
+title: "二項分布を用いたベイジアンモデリング"
+author: "Ryo Nakagami"
+date: "2024-11-01"
+date-modified: last-modified
+number_sections: false
+code-fold: true
+comments:
+    utterances:
+         repo: RyoNakagami/statistics-for-regression-monkey
+         label: discussion
+---
+
+
+```{python}
+from cmdstanpy import CmdStanModel
+
+data = {
+ "alpha": 1,
+ "beta": 1,
+ "N" : 20,
+ "Y" : [0,1,0,0,0,0,0,0,0,1,1,1,0,0,1,0,0,1,0,0]
+}
+
+model = CmdStanModel(stan_file="../../stancode/binomial_toymodel_01.stan")
+```
+
+
+```{python}
+fit = model.sample(data=data)
+```
+
+
+
+```{python}
+fit.summary()
+```

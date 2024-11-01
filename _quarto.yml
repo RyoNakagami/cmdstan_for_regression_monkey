@@ -41,6 +41,8 @@ book:
   chapters:
     - index.qmd
     - part: posts/bayesianstatistics101/chapter_header.qmd
+      chapters:
+        - posts/bayesianstatistics101/binomial_toymodel.qmd
 
   # appendices: 
     # - 
