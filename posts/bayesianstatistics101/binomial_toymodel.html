@@ -128,6 +128,7 @@ gtag('config', 'G-LCHP8F033K', { 'anonymize_ip': true});
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
 
 
 </head>
@@ -268,7 +269,7 @@ gtag('config', 'G-LCHP8F033K', { 'anonymize_ip': true});
 </header>
 
 
-<div id="94140a1d" class="cell" data-execution_count="1">
+<div id="0d320989" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> cmdstanpy <span class="im">import</span> CmdStanModel</span>
@@ -283,367 +284,52 @@ gtag('config', 'G-LCHP8F033K', { 'anonymize_ip': true});
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> CmdStanModel(stan_file<span class="op">=</span><span class="st">"../../stancode/binomial_toymodel_01.stan"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
-<pre><code>12:01:02 - cmdstanpy - INFO - compiling stan file /home/runner/work/cmdstan_for_regression_monkey/cmdstan_for_regression_monkey/stancode/binomial_toymodel_01.stan to exe file /home/runner/work/cmdstan_for_regression_monkey/cmdstan_for_regression_monkey/stancode/binomial_toymodel_01
-12:01:08 - cmdstanpy - INFO - compiled model executable: /home/runner/work/cmdstan_for_regression_monkey/cmdstan_for_regression_monkey/stancode/binomial_toymodel_01</code></pre>
+<pre><code>13:19:52 - cmdstanpy - INFO - compiling stan file /home/runner/work/cmdstan_for_regression_monkey/cmdstan_for_regression_monkey/stancode/binomial_toymodel_01.stan to exe file /home/runner/work/cmdstan_for_regression_monkey/cmdstan_for_regression_monkey/stancode/binomial_toymodel_01
+13:19:57 - cmdstanpy - INFO - compiled model executable: /home/runner/work/cmdstan_for_regression_monkey/cmdstan_for_regression_monkey/stancode/binomial_toymodel_01</code></pre>
 </div>
 </div>
-<div id="82c3e789" class="cell" data-execution_count="2">
+<div id="a44cedaa" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> model.sample(data<span class="op">=</span>data, show_console <span class="op">=</span> <span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> model.sample(data<span class="op">=</span>data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
-<pre><code>12:01:08 - cmdstanpy - INFO - Chain [1] start processing
-12:01:08 - cmdstanpy - INFO - Chain [2] start processing
-12:01:08 - cmdstanpy - INFO - Chain [3] start processing
-12:01:08 - cmdstanpy - INFO - Chain [4] start processing
-12:01:08 - cmdstanpy - INFO - Chain [1] done processing
-12:01:08 - cmdstanpy - INFO - Chain [2] done processing
-12:01:08 - cmdstanpy - INFO - Chain [4] done processing
-12:01:08 - cmdstanpy - INFO - Chain [3] done processing</code></pre>
+<pre><code>13:19:57 - cmdstanpy - INFO - CmdStan start processing</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"97e2d1be899a4cf7997fa3e48e5e16f7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"ba1078317489433d8971314c4bee1f03","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"531589b10a2c4e0ebe68dfee8a3007f7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"f02874dd46934cd2b2aff49806fd7e57","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Chain [1] method = sample (Default)
-Chain [1] sample
-Chain [1] num_samples = 1000 (Default)
-Chain [1] num_warmup = 1000 (Default)
-Chain [1] save_warmup = false (Default)
-Chain [1] thin = 1 (Default)
-Chain [1] adapt
-Chain [1] engaged = true (Default)
-Chain [1] gamma = 0.05 (Default)
-Chain [1] delta = 0.8 (Default)
-Chain [1] kappa = 0.75 (Default)
-Chain [1] t0 = 10 (Default)
-Chain [1] init_buffer = 75 (Default)
-Chain [1] term_buffer = 50 (Default)
-Chain [1] window = 25 (Default)
-Chain [1] save_metric = false (Default)
-Chain [1] algorithm = hmc (Default)
-Chain [1] hmc
-Chain [1] engine = nuts (Default)
-Chain [1] nuts
-Chain [1] max_depth = 10 (Default)
-Chain [1] metric = diag_e (Default)
-Chain [1] metric_file =  (Default)
-Chain [1] stepsize = 1 (Default)
-Chain [1] stepsize_jitter = 0 (Default)
-Chain [1] num_chains = 1 (Default)
-Chain [2] method = sample (Default)
-Chain [1] id = 1 (Default)
-Chain [1] data
-Chain [1] file = /tmp/tmpbd3i87cn/m4hm5zyi.json
-Chain [1] init = 2 (Default)
-Chain [1] random
-Chain [1] seed = 26068
-Chain [1] output
-Chain [1] file = /tmp/tmpbd3i87cn/binomial_toymodel_013uxepct5/binomial_toymodel_01-20241101120108_1.csv
-Chain [1] diagnostic_file =  (Default)
-Chain [1] refresh = 100 (Default)
-Chain [1] sig_figs = -1 (Default)
-Chain [1] profile_file = profile.csv (Default)
-Chain [1] save_cmdstan_config = false (Default)
-Chain [1] num_threads = 1 (Default)
-Chain [1] 
-Chain [2] sample
-Chain [2] num_samples = 1000 (Default)
-Chain [2] num_warmup = 1000 (Default)
-Chain [2] save_warmup = false (Default)
-Chain [2] thin = 1 (Default)
-Chain [2] adapt
-Chain [2] engaged = true (Default)
-Chain [2] gamma = 0.05 (Default)
-Chain [2] delta = 0.8 (Default)
-Chain [2] kappa = 0.75 (Default)
-Chain [2] t0 = 10 (Default)
-Chain [2] init_buffer = 75 (Default)
-Chain [2] term_buffer = 50 (Default)
-Chain [2] window = 25 (Default)
-Chain [2] save_metric = false (Default)
-Chain [2] algorithm = hmc (Default)
-Chain [2] hmc
-Chain [2] engine = nuts (Default)
-Chain [2] nuts
-Chain [2] max_depth = 10 (Default)
-Chain [2] metric = diag_e (Default)
-Chain [2] metric_file =  (Default)
-Chain [2] stepsize = 1 (Default)
-Chain [2] stepsize_jitter = 0 (Default)
-Chain [2] num_chains = 1 (Default)
-Chain [2] id = 2
-Chain [2] data
-Chain [2] file = /tmp/tmpbd3i87cn/m4hm5zyi.json
-Chain [2] init = 2 (Default)
-Chain [2] random
-Chain [2] seed = 26068
-Chain [4] method = sample (Default)
-Chain [1] 
-Chain [1] Gradient evaluation took 4e-06 seconds
-Chain [1] 1000 transitions using 10 leapfrog steps per transition would take 0.04 seconds.
-Chain [1] Adjust your expectations accordingly!
-Chain [1] 
-Chain [1] 
-Chain [4] sample
-Chain [4] num_samples = 1000 (Default)
-Chain [4] num_warmup = 1000 (Default)
-Chain [4] save_warmup = false (Default)
-Chain [4] thin = 1 (Default)
-Chain [4] adapt
-Chain [4] engaged = true (Default)
-Chain [4] gamma = 0.05 (Default)
-Chain [4] delta = 0.8 (Default)
-Chain [4] kappa = 0.75 (Default)
-Chain [4] t0 = 10 (Default)
-Chain [4] init_buffer = 75 (Default)
-Chain [4] term_buffer = 50 (Default)
-Chain [4] window = 25 (Default)
-Chain [4] save_metric = false (Default)
-Chain [4] algorithm = hmc (Default)
-Chain [4] hmc
-Chain [4] engine = nuts (Default)
-Chain [4] nuts
-Chain [4] max_depth = 10 (Default)
-Chain [4] metric = diag_e (Default)
-Chain [4] metric_file =  (Default)
-Chain [4] stepsize = 1 (Default)
-Chain [4] stepsize_jitter = 0 (Default)
-Chain [4] num_chains = 1 (Default)
-Chain [4] id = 4
-Chain [4] data
-Chain [4] file = /tmp/tmpbd3i87cn/m4hm5zyi.json
-Chain [4] init = 2 (Default)
-Chain [4] random
-Chain [4] seed = 26068
-Chain [4] output
-Chain [4] file = /tmp/tmpbd3i87cn/binomial_toymodel_013uxepct5/binomial_toymodel_01-20241101120108_4.csv
-Chain [4] diagnostic_file =  (Default)
-Chain [4] refresh = 100 (Default)
-Chain [4] sig_figs = -1 (Default)
-Chain [4] profile_file = profile.csv (Default)
-Chain [4] save_cmdstan_config = false (Default)
-Chain [4] num_threads = 1 (Default)
-Chain [4] 
-Chain [1] Iteration:    1 / 2000 [  0%]  (Warmup)
-Chain [2] output
-Chain [2] file = /tmp/tmpbd3i87cn/binomial_toymodel_013uxepct5/binomial_toymodel_01-20241101120108_2.csv
-Chain [2] diagnostic_file =  (Default)
-Chain [2] refresh = 100 (Default)
-Chain [2] sig_figs = -1 (Default)
-Chain [2] profile_file = profile.csv (Default)
-Chain [2] save_cmdstan_config = false (Default)
-Chain [2] num_threads = 1 (Default)
-Chain [2] 
-Chain [2] 
-Chain [2] Gradient evaluation took 4e-06 seconds
-Chain [2] 1000 transitions using 10 leapfrog steps per transition would take 0.04 seconds.
-Chain [2] Adjust your expectations accordingly!
-Chain [2] 
-Chain [2] 
-Chain [2] Iteration:    1 / 2000 [  0%]  (Warmup)
-Chain [3] method = sample (Default)
-Chain [1] Iteration:  100 / 2000 [  5%]  (Warmup)
-Chain [3] sample
-Chain [3] num_samples = 1000 (Default)
-Chain [3] num_warmup = 1000 (Default)
-Chain [3] save_warmup = false (Default)
-Chain [3] thin = 1 (Default)
-Chain [3] adapt
-Chain [3] engaged = true (Default)
-Chain [3] gamma = 0.05 (Default)
-Chain [3] delta = 0.8 (Default)
-Chain [3] kappa = 0.75 (Default)
-Chain [3] t0 = 10 (Default)
-Chain [3] init_buffer = 75 (Default)
-Chain [3] term_buffer = 50 (Default)
-Chain [3] window = 25 (Default)
-Chain [3] save_metric = false (Default)
-Chain [3] algorithm = hmc (Default)
-Chain [3] hmc
-Chain [3] engine = nuts (Default)
-Chain [3] nuts
-Chain [2] Iteration:  100 / 2000 [  5%]  (Warmup)
-Chain [3] max_depth = 10 (Default)
-Chain [4] 
-Chain [3] metric = diag_e (Default)
-Chain [3] metric_file =  (Default)
-Chain [3] stepsize = 1 (Default)
-Chain [3] stepsize_jitter = 0 (Default)
-Chain [3] num_chains = 1 (Default)
-Chain [3] id = 3
-Chain [3] data
-Chain [3] file = /tmp/tmpbd3i87cn/m4hm5zyi.json
-Chain [3] init = 2 (Default)
-Chain [3] random
-Chain [3] seed = 26068
-Chain [3] output
-Chain [3] file = /tmp/tmpbd3i87cn/binomial_toymodel_013uxepct5/binomial_toymodel_01-20241101120108_3.csv
-Chain [3] diagnostic_file =  (Default)
-Chain [3] refresh = 100 (Default)
-Chain [3] sig_figs = -1 (Default)
-Chain [3] profile_file = profile.csv (Default)
-Chain [3] save_cmdstan_config = false (Default)
-Chain [3] num_threads = 1 (Default)
-Chain [3] 
-Chain [4] Gradient evaluation took 2e-06 seconds
-Chain [4] 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
-Chain [4] Adjust your expectations accordingly!
-Chain [4] 
-Chain [4] 
-Chain [4] Iteration:    1 / 2000 [  0%]  (Warmup)
-Chain [1] Iteration:  200 / 2000 [ 10%]  (Warmup)
-Chain [3] 
-Chain [3] Gradient evaluation took 2e-06 seconds
-Chain [3] 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
-Chain [3] Adjust your expectations accordingly!
-Chain [2] Iteration:  200 / 2000 [ 10%]  (Warmup)
-Chain [3] 
-Chain [3] 
-Chain [4] Iteration:  100 / 2000 [  5%]  (Warmup)
-Chain [3] Iteration:    1 / 2000 [  0%]  (Warmup)
-Chain [1] Iteration:  300 / 2000 [ 15%]  (Warmup)
-Chain [2] Iteration:  300 / 2000 [ 15%]  (Warmup)
-Chain [4] Iteration:  200 / 2000 [ 10%]  (Warmup)
-Chain [3] Iteration:  100 / 2000 [  5%]  (Warmup)
-Chain [1] Iteration:  400 / 2000 [ 20%]  (Warmup)
-Chain [2] Iteration:  400 / 2000 [ 20%]  (Warmup)
-Chain [4] Iteration:  300 / 2000 [ 15%]  (Warmup)
-Chain [3] Iteration:  200 / 2000 [ 10%]  (Warmup)
-Chain [1] Iteration:  500 / 2000 [ 25%]  (Warmup)
-Chain [2] Iteration:  500 / 2000 [ 25%]  (Warmup)
-Chain [4] Iteration:  400 / 2000 [ 20%]  (Warmup)
-Chain [3] Iteration:  300 / 2000 [ 15%]  (Warmup)
-Chain [1] Iteration:  600 / 2000 [ 30%]  (Warmup)
-Chain [2] Iteration:  600 / 2000 [ 30%]  (Warmup)
-Chain [4] Iteration:  500 / 2000 [ 25%]  (Warmup)
-Chain [1] Iteration:  700 / 2000 [ 35%]  (Warmup)
-Chain [3] Iteration:  400 / 2000 [ 20%]  (Warmup)
-Chain [2] Iteration:  700 / 2000 [ 35%]  (Warmup)
-Chain [4] Iteration:  600 / 2000 [ 30%]  (Warmup)
-Chain [1] Iteration:  800 / 2000 [ 40%]  (Warmup)
-Chain [3] Iteration:  500 / 2000 [ 25%]  (Warmup)
-Chain [2] Iteration:  800 / 2000 [ 40%]  (Warmup)
-Chain [1] Iteration:  900 / 2000 [ 45%]  (Warmup)
-Chain [4] Iteration:  700 / 2000 [ 35%]  (Warmup)
-Chain [3] Iteration:  600 / 2000 [ 30%]  (Warmup)
-Chain [2] Iteration:  900 / 2000 [ 45%]  (Warmup)
-Chain [4] Iteration:  800 / 2000 [ 40%]  (Warmup)
-Chain [1] Iteration: 1000 / 2000 [ 50%]  (Warmup)
-Chain [1] Iteration: 1001 / 2000 [ 50%]  (Sampling)
-Chain [3] Iteration:  700 / 2000 [ 35%]  (Warmup)
-Chain [2] Iteration: 1000 / 2000 [ 50%]  (Warmup)
-Chain [4] Iteration:  900 / 2000 [ 45%]  (Warmup)
-Chain [2] Iteration: 1001 / 2000 [ 50%]  (Sampling)
-Chain [3] Iteration:  800 / 2000 [ 40%]  (Warmup)
-Chain [4] Iteration: 1000 / 2000 [ 50%]  (Warmup)
-Chain [4] Iteration: 1001 / 2000 [ 50%]  (Sampling)
-Chain [1] Iteration: 1100 / 2000 [ 55%]  (Sampling)
-Chain [3] Iteration:  900 / 2000 [ 45%]  (Warmup)
-Chain [2] Iteration: 1100 / 2000 [ 55%]  (Sampling)
-Chain [3] Iteration: 1000 / 2000 [ 50%]  (Warmup)
-Chain [3] Iteration: 1001 / 2000 [ 50%]  (Sampling)
-Chain [4] Iteration: 1100 / 2000 [ 55%]  (Sampling)
-Chain [1] Iteration: 1200 / 2000 [ 60%]  (Sampling)
-Chain [2] Iteration: 1200 / 2000 [ 60%]  (Sampling)
-Chain [3] Iteration: 1100 / 2000 [ 55%]  (Sampling)
-Chain [1] Iteration: 1300 / 2000 [ 65%]  (Sampling)
-Chain [4] Iteration: 1200 / 2000 [ 60%]  (Sampling)
-Chain [2] Iteration: 1300 / 2000 [ 65%]  (Sampling)
-Chain [3] Iteration: 1200 / 2000 [ 60%]  (Sampling)
-Chain [4] Iteration: 1300 / 2000 [ 65%]  (Sampling)
-Chain [1] Iteration: 1400 / 2000 [ 70%]  (Sampling)
-Chain [2] Iteration: 1400 / 2000 [ 70%]  (Sampling)
-Chain [3] Iteration: 1300 / 2000 [ 65%]  (Sampling)
-Chain [1] Iteration: 1500 / 2000 [ 75%]  (Sampling)
-Chain [4] Iteration: 1400 / 2000 [ 70%]  (Sampling)
-Chain [2] Iteration: 1500 / 2000 [ 75%]  (Sampling)
-Chain [1] Iteration: 1600 / 2000 [ 80%]  (Sampling)
-Chain [3] Iteration: 1400 / 2000 [ 70%]  (Sampling)
-Chain [4] Iteration: 1500 / 2000 [ 75%]  (Sampling)
-Chain [2] Iteration: 1600 / 2000 [ 80%]  (Sampling)
-Chain [1] Iteration: 1700 / 2000 [ 85%]  (Sampling)
-Chain [4] Iteration: 1600 / 2000 [ 80%]  (Sampling)
-Chain [3] Iteration: 1500 / 2000 [ 75%]  (Sampling)
-Chain [2] Iteration: 1700 / 2000 [ 85%]  (Sampling)
-Chain [1] Iteration: 1800 / 2000 [ 90%]  (Sampling)
-Chain [4] Iteration: 1700 / 2000 [ 85%]  (Sampling)
-Chain [3] Iteration: 1600 / 2000 [ 80%]  (Sampling)
-Chain [2] Iteration: 1800 / 2000 [ 90%]  (Sampling)
-Chain [1] Iteration: 1900 / 2000 [ 95%]  (Sampling)
-Chain [4] Iteration: 1800 / 2000 [ 90%]  (Sampling)
-Chain [3] Iteration: 1700 / 2000 [ 85%]  (Sampling)
-Chain [2] Iteration: 1900 / 2000 [ 95%]  (Sampling)
-Chain [1] Iteration: 2000 / 2000 [100%]  (Sampling)
-Chain [1] 
-Chain [1] Elapsed Time: 0.008 seconds (Warm-up)
-Chain [1] 0.016 seconds (Sampling)
-Chain [1] 0.024 seconds (Total)
-Chain [1] 
-Chain [4] Iteration: 1900 / 2000 [ 95%]  (Sampling)
-Chain [3] Iteration: 1800 / 2000 [ 90%]  (Sampling)
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [1] 
-Chain [2] Iteration: 2000 / 2000 [100%]  (Sampling)
-Chain [2] 
-Chain [2] Elapsed Time: 0.009 seconds (Warm-up)
-Chain [2] 0.017 seconds (Sampling)
-Chain [2] 0.026 seconds (Total)
-Chain [2] 
-Chain [1] 
-Chain [2] 
-Chain [4] Iteration: 2000 / 2000 [100%]  (Sampling)
-Chain [3] Iteration: 1900 / 2000 [ 95%]  (Sampling)
-Chain [4] 
-Chain [4]  Elapsed Time: 0.008 seconds (Warm-up)
-Chain [4]                0.017 seconds (Sampling)
-Chain [4]                0.025 seconds (Total)
-Chain [4] 
-Chain [4] 
-Chain [3] Iteration: 2000 / 2000 [100%]  (Sampling)
-Chain [3] 
-Chain [3] Elapsed Time: 0.008 seconds (Warm-up)
-Chain [3] 0.019 seconds (Sampling)
-Chain [3] 0.027 seconds (Total)
-Chain [3] 
-Chain [3] </code></pre>
+<pre><code>                                                                                                                                                                                                                                                                                                                                </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>13:19:58 - cmdstanpy - INFO - CmdStan done processing.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code></code></pre>
 </div>
 </div>
-<div id="fd46a244" class="cell" data-execution_count="3">
+<div id="63d4524a" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fit.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fit.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
@@ -667,27 +353,27 @@ Chain [3] </code></pre>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">lp__</td>
-<td>-14.263100</td>
-<td>0.017512</td>
-<td>0.718309</td>
-<td>-15.743200</td>
-<td>-13.993000</td>
-<td>-13.762900</td>
-<td>1682.43</td>
-<td>24383.0</td>
-<td>1.00052</td>
+<td>-14.275500</td>
+<td>0.015855</td>
+<td>0.711406</td>
+<td>-15.740900</td>
+<td>-13.997600</td>
+<td>-13.763300</td>
+<td>2013.37</td>
+<td>29179.2</td>
+<td>0.999298</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">theta</td>
-<td>0.316506</td>
-<td>0.002404</td>
-<td>0.095760</td>
-<td>0.165167</td>
-<td>0.310247</td>
-<td>0.481013</td>
-<td>1586.53</td>
-<td>22993.3</td>
-<td>1.00275</td>
+<td>0.315622</td>
+<td>0.002438</td>
+<td>0.097188</td>
+<td>0.168943</td>
+<td>0.306752</td>
+<td>0.487377</td>
+<td>1588.71</td>
+<td>23024.8</td>
+<td>1.001390</td>
 </tr>
 </tbody>
 </table>
@@ -706,6 +392,9 @@ Chain [3] </code></pre>
        modName = modName.replace("Example", "<strong>&#9654;</strong>&nbsp; Example");
        title.innerHTML = modName;
    });
+</script>
+<script type="application/vnd.jupyter.widget-state+json">
+{"state":{"0212248c79e34da89c18fef46c598f2d":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"074dcb95812643938e55d0b4af274a47":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"success","description":"","description_allow_html":false,"layout":"IPY_MODEL_8ed50cbdfe09469aaee725949c82e66d","max":22,"min":0,"orientation":"horizontal","style":"IPY_MODEL_9232c60f294f4bce911824a368205e98","tabbable":null,"tooltip":null,"value":22}},"12423ed334e848e8bac1fe016aa289c1":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"success","description":"","description_allow_html":false,"layout":"IPY_MODEL_a161abc6127b470386227d006a51aa73","max":22,"min":0,"orientation":"horizontal","style":"IPY_MODEL_13c17fd8d43e4b08926e1ac484346f07","tabbable":null,"tooltip":null,"value":22}},"1299342b564c44e683c5fcf76fae2f10":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"13c17fd8d43e4b08926e1ac484346f07":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":"blue","description_width":""}},"13c5bf1442144f8384307ccea09e6ccd":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"1567eb2b1427458db3db75be68555ed7":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":"blue","description_width":""}},"1fa0ad3ba6704285a9ce9fc781dabac7":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"31369b760c834f0fb9aca0956f9309ee":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"33bf4247747d4fb09d88e56e3c69b8b8":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"394ab88627f6451095d6ab037ce61f2b":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"3ad34d9d607840419a08564d9c3f319a":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"451005bb960f4243b8ee138b6f86e9b0":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"48d346d925cd412d826863a24d073c57":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"51ea2c49a9404ab89054b6a4b84ea009":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"52b2a98e6fe04cad91515da3d6411657":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"531589b10a2c4e0ebe68dfee8a3007f7":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HBoxModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HBoxModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HBoxView","box_style":"","children":["IPY_MODEL_bce371888d2d43e2b358420486f6c3ac","IPY_MODEL_074dcb95812643938e55d0b4af274a47","IPY_MODEL_bb5ce7611be84eef9240ccb25cb6e444"],"layout":"IPY_MODEL_394ab88627f6451095d6ab037ce61f2b","tabbable":null,"tooltip":null}},"534408b91696485891c975491f17bdef":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_33bf4247747d4fb09d88e56e3c69b8b8","placeholder":"​","style":"IPY_MODEL_a34eb583290f40dc94a01ca944f88c88","tabbable":null,"tooltip":null,"value":"chain 2 "}},"64bc4141e670437996673c6d12c28f66":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"70a089a9daf84bf48a56666b4ea75ed7":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"80614bf14d5b44b1bd7d0f39c3fb7e80":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"82a0281d97d04a0696a7f62c5ee49d4b":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"8ed50cbdfe09469aaee725949c82e66d":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"9232c60f294f4bce911824a368205e98":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":"blue","description_width":""}},"96d2e0ff50a2435fb75b31897e902076":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"97e2d1be899a4cf7997fa3e48e5e16f7":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HBoxModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HBoxModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HBoxView","box_style":"","children":["IPY_MODEL_e41b580d587146bdb8b40e0ccda99c2c","IPY_MODEL_9cc42ce744134a84a408b513d6c09a31","IPY_MODEL_feeadc1abb524be8bb10e5bf69656a60"],"layout":"IPY_MODEL_82a0281d97d04a0696a7f62c5ee49d4b","tabbable":null,"tooltip":null}},"9a1ae589ceaf4ad0bf73750ce47d8456":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"9cc42ce744134a84a408b513d6c09a31":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"success","description":"","description_allow_html":false,"layout":"IPY_MODEL_ed5f93dd46b34422a684ebc524c4680f","max":22,"min":0,"orientation":"horizontal","style":"IPY_MODEL_cac03b7b5a834e08a6d27f108ee0672d","tabbable":null,"tooltip":null,"value":22}},"a161abc6127b470386227d006a51aa73":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"a34eb583290f40dc94a01ca944f88c88":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"ba1078317489433d8971314c4bee1f03":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HBoxModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HBoxModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HBoxView","box_style":"","children":["IPY_MODEL_534408b91696485891c975491f17bdef","IPY_MODEL_d90d858caa51453da4a0342aee0758a6","IPY_MODEL_e5cb8ab88bff4c2bbef98911bf3a9dcb"],"layout":"IPY_MODEL_9a1ae589ceaf4ad0bf73750ce47d8456","tabbable":null,"tooltip":null}},"bb5ce7611be84eef9240ccb25cb6e444":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_52b2a98e6fe04cad91515da3d6411657","placeholder":"​","style":"IPY_MODEL_0212248c79e34da89c18fef46c598f2d","tabbable":null,"tooltip":null,"value":" 00:00 Sampling completed"}},"bbc774e02bc04e75b451e151cac6b2c2":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"bce371888d2d43e2b358420486f6c3ac":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_451005bb960f4243b8ee138b6f86e9b0","placeholder":"​","style":"IPY_MODEL_80614bf14d5b44b1bd7d0f39c3fb7e80","tabbable":null,"tooltip":null,"value":"chain 3 "}},"cac03b7b5a834e08a6d27f108ee0672d":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":"blue","description_width":""}},"d90d858caa51453da4a0342aee0758a6":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"success","description":"","description_allow_html":false,"layout":"IPY_MODEL_31369b760c834f0fb9aca0956f9309ee","max":22,"min":0,"orientation":"horizontal","style":"IPY_MODEL_1567eb2b1427458db3db75be68555ed7","tabbable":null,"tooltip":null,"value":22}},"db9c3209ef84451ab4e79a7cc4d17073":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_3ad34d9d607840419a08564d9c3f319a","placeholder":"​","style":"IPY_MODEL_64bc4141e670437996673c6d12c28f66","tabbable":null,"tooltip":null,"value":" 00:00 Sampling completed"}},"dbfb1774d5c1429095937502c85f8f4e":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"e155d45672d642d4bd0767b1083bedf8":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_1fa0ad3ba6704285a9ce9fc781dabac7","placeholder":"​","style":"IPY_MODEL_51ea2c49a9404ab89054b6a4b84ea009","tabbable":null,"tooltip":null,"value":"chain 4 "}},"e41b580d587146bdb8b40e0ccda99c2c":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_48d346d925cd412d826863a24d073c57","placeholder":"​","style":"IPY_MODEL_96d2e0ff50a2435fb75b31897e902076","tabbable":null,"tooltip":null,"value":"chain 1 "}},"e5cb8ab88bff4c2bbef98911bf3a9dcb":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_bbc774e02bc04e75b451e151cac6b2c2","placeholder":"​","style":"IPY_MODEL_1299342b564c44e683c5fcf76fae2f10","tabbable":null,"tooltip":null,"value":" 00:00 Sampling completed"}},"ed5f93dd46b34422a684ebc524c4680f":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"f02874dd46934cd2b2aff49806fd7e57":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HBoxModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HBoxModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HBoxView","box_style":"","children":["IPY_MODEL_e155d45672d642d4bd0767b1083bedf8","IPY_MODEL_12423ed334e848e8bac1fe016aa289c1","IPY_MODEL_db9c3209ef84451ab4e79a7cc4d17073"],"layout":"IPY_MODEL_70a089a9daf84bf48a56666b4ea75ed7","tabbable":null,"tooltip":null}},"feeadc1abb524be8bb10e5bf69656a60":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_dbfb1774d5c1429095937502c85f8f4e","placeholder":"​","style":"IPY_MODEL_13c5bf1442144f8384307ccea09e6ccd","tabbable":null,"tooltip":null,"value":" 00:00 Sampling completed"}}},"version_major":2,"version_minor":0}
 </script>
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
