@@ -29,6 +29,8 @@ book:
          - text: OhGoshGit!?!
            href: https://ohgoshgit.github.io/
            aria-label: blog-ogg
+       - icon: rss
+         href: index.xml
     
   repo-actions: [edit, issue]
   page-footer:
@@ -38,6 +40,7 @@ book:
         href: LICENSE
   chapters:
     - index.qmd
+    - part: posts/bayesianstatistics101/chapter_header.qmd
 
   # appendices: 
     # - 

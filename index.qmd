@@ -5,6 +5,11 @@ date: "2024-10-19"
 date-modified: last-modified
 number_sections: false
 code-fold: true
+listing:
+      sort: "date desc"
+      sort-ui: false
+      filter-ui: false
+      feed: true
 # when you run this file locally, do not forget to run poetry shell
 ---
 

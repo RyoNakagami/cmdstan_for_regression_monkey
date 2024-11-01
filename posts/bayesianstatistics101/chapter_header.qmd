@@ -1,0 +1,12 @@
+---
+title: "Bayesian statisticsの考え方"
+author: "Ryo Nakagami"
+date: "2024-11-01"
+date-modified: last-modified
+number_sections: false
+code-fold: true
+comments:
+    utterances:
+         repo: RyoNakagami/statistics-for-regression-monkey
+         label: discussion
+---
