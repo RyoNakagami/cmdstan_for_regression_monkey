@@ -9,7 +9,7 @@
 <meta name="author" content="Ryo Nakagami">
 <meta name="dcterms.date" content="2024-11-01">
 
-<title>Bayesian methods – cmdstanpy for Regression Monkeys</title>
+<title>1&nbsp; 二項分布を用いたベイジアンモデリング – cmdstanpy for Regression Monkeys</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,18 +22,51 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<link href="../../posts/bayesianstatistics101/binomial_toymodel.html" rel="next">
-<link href="../../index.html" rel="prev">
+<link href="../../posts/bayesianstatistics101/chapter_header.html" rel="prev">
 <link href="../.././img/favicon.ico" rel="icon">
 <script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
@@ -92,36 +125,10 @@ gtag('config', 'G-LCHP8F033K', { 'anonymize_ip': true});
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&amp;display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -134,7 +141,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../posts/bayesianstatistics101/chapter_header.html">Bayesian methods</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../posts/bayesianstatistics101/chapter_header.html">Bayesian methods</a></li><li class="breadcrumb-item"><a href="../../posts/bayesianstatistics101/binomial_toymodel.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">二項分布を用いたベイジアンモデリング</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -198,7 +205,7 @@ window.Quarto = {
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../posts/bayesianstatistics101/chapter_header.html" class="sidebar-item-text sidebar-link active">
+            <a href="../../posts/bayesianstatistics101/chapter_header.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Bayesian methods</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -207,7 +214,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../posts/bayesianstatistics101/binomial_toymodel.html" class="sidebar-item-text sidebar-link">
+  <a href="../../posts/bayesianstatistics101/binomial_toymodel.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">二項分布を用いたベイジアンモデリング</span></span></a>
   </div>
 </li>
@@ -218,21 +225,15 @@ window.Quarto = {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#ベイズ法の考え方" id="toc-ベイズ法の考え方" class="nav-link active" data-scroll-target="#ベイズ法の考え方">ベイズ法の考え方</a></li>
-  </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/RyoNakagami/cmdstan_for_regression_monkey/edit/main/posts/bayesianstatistics101/chapter_header.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/RyoNakagami/cmdstan_for_regression_monkey/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../posts/bayesianstatistics101/chapter_header.html">Bayesian methods</a></li><li class="breadcrumb-item"><a href="../../posts/bayesianstatistics101/binomial_toymodel.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">二項分布を用いたベイジアンモデリング</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Bayesian methods</h1>
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">二項分布を用いたベイジアンモデリング</span></h1>
 </div>
 
 
@@ -267,26 +268,435 @@ window.Quarto = {
 </header>
 
 
-<section id="ベイズ法の考え方" class="level2">
-<h2 class="anchored" data-anchor-id="ベイズ法の考え方">ベイズ法の考え方</h2>
-<p>ある集団の特性がパラメーター <span class="math inline">\(\theta\)</span> として表現されるとします．集団の一部についてデータ <span class="math inline">\(y\)</span> が観測されたとき， その <span class="math inline">\(y\)</span> からの情報はパラメーター <span class="math inline">\(\theta\)</span> についての不確実性(uncertainty)を減らすことになります． ベイズ推測(Bayesian inference)とはこの不確実性の変化を測ることが直接的な目的となります．</p>
-<p><strong> ▶&nbsp; 事前分布と事後分布</strong></p>
-<p>標本空間 <span class="math inline">\(\mathcal{Y}\)</span>, パラメーター空間 <span class="math inline">\(\Theta\)</span> としたとき，ベイズ学習は <span class="math inline">\(y, \theta\)</span> に関する信念を <span class="math inline">\(\mathcal{Y}\)</span> と <span class="math inline">\(\Theta\)</span> の確率分布によって表現するところから始まります．</p>
-<p>まず，<span class="math inline">\(\theta\in\Theta\)</span> について事前分布 <span class="math inline">\(p(\theta)\)</span> を設定します． <span class="math inline">\(p(\theta)\)</span> は，<span class="math inline">\(\theta\)</span> が母集団の真の特性を表すとどれだけ分析者が信じているか？を表していると解釈できます．</p>
-<p>データ <span class="math inline">\(y\)</span> が観測された後，ベイズルールに従って <span class="math inline">\(\theta\)</span> に関する信念を更新します．このとき現れるのが事後分布 <span class="math inline">\(p(\theta\vert y)\)</span> ですが，これはデータ <span class="math inline">\(y\)</span> が観測された後に <span class="math inline">\(\theta\)</span> が真の値であるとどれだけ信じているかを表すことに対応しています．</p>
-<div class="blog-custom-border">
-<p><strong>Def: 確率(probability)</strong> <br></p>
-<p>ベイズ法における確率(probability) は，未知の量について人々の持つ情報や信念(belief)を表すものと解釈される．</p>
+<div id="94140a1d" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> cmdstanpy <span class="im">import</span> CmdStanModel</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a> <span class="st">"alpha"</span>: <span class="dv">1</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a> <span class="st">"beta"</span>: <span class="dv">1</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a> <span class="st">"N"</span> : <span class="dv">20</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a> <span class="st">"Y"</span> : [<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>]</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> CmdStanModel(stan_file<span class="op">=</span><span class="st">"../../stancode/binomial_toymodel_01.stan"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>12:01:02 - cmdstanpy - INFO - compiling stan file /home/runner/work/cmdstan_for_regression_monkey/cmdstan_for_regression_monkey/stancode/binomial_toymodel_01.stan to exe file /home/runner/work/cmdstan_for_regression_monkey/cmdstan_for_regression_monkey/stancode/binomial_toymodel_01
+12:01:08 - cmdstanpy - INFO - compiled model executable: /home/runner/work/cmdstan_for_regression_monkey/cmdstan_for_regression_monkey/stancode/binomial_toymodel_01</code></pre>
 </div>
-<p><br></p>
-<p><strong> ▶&nbsp; ベイズルール</strong></p>
-<p><span class="math display">\[
-p(\theta\vert y) = \frac{p(y\vert \theta)p(\theta)}{\int_{\Theta}p(y\vert \tilde\theta)p(\tilde\theta)\,\mathrm{d}\tilde\theta}
-\]</span></p>
-<p>ベイズルールが示している内容は．事後分布がどうあるべきかではなく，<strong>新たな情報を得たときに事後分布はどう変化すべきか？</strong>です．</p>
+</div>
+<div id="82c3e789" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> model.sample(data<span class="op">=</span>data, show_console <span class="op">=</span> <span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>12:01:08 - cmdstanpy - INFO - Chain [1] start processing
+12:01:08 - cmdstanpy - INFO - Chain [2] start processing
+12:01:08 - cmdstanpy - INFO - Chain [3] start processing
+12:01:08 - cmdstanpy - INFO - Chain [4] start processing
+12:01:08 - cmdstanpy - INFO - Chain [1] done processing
+12:01:08 - cmdstanpy - INFO - Chain [2] done processing
+12:01:08 - cmdstanpy - INFO - Chain [4] done processing
+12:01:08 - cmdstanpy - INFO - Chain [3] done processing</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chain [1] method = sample (Default)
+Chain [1] sample
+Chain [1] num_samples = 1000 (Default)
+Chain [1] num_warmup = 1000 (Default)
+Chain [1] save_warmup = false (Default)
+Chain [1] thin = 1 (Default)
+Chain [1] adapt
+Chain [1] engaged = true (Default)
+Chain [1] gamma = 0.05 (Default)
+Chain [1] delta = 0.8 (Default)
+Chain [1] kappa = 0.75 (Default)
+Chain [1] t0 = 10 (Default)
+Chain [1] init_buffer = 75 (Default)
+Chain [1] term_buffer = 50 (Default)
+Chain [1] window = 25 (Default)
+Chain [1] save_metric = false (Default)
+Chain [1] algorithm = hmc (Default)
+Chain [1] hmc
+Chain [1] engine = nuts (Default)
+Chain [1] nuts
+Chain [1] max_depth = 10 (Default)
+Chain [1] metric = diag_e (Default)
+Chain [1] metric_file =  (Default)
+Chain [1] stepsize = 1 (Default)
+Chain [1] stepsize_jitter = 0 (Default)
+Chain [1] num_chains = 1 (Default)
+Chain [2] method = sample (Default)
+Chain [1] id = 1 (Default)
+Chain [1] data
+Chain [1] file = /tmp/tmpbd3i87cn/m4hm5zyi.json
+Chain [1] init = 2 (Default)
+Chain [1] random
+Chain [1] seed = 26068
+Chain [1] output
+Chain [1] file = /tmp/tmpbd3i87cn/binomial_toymodel_013uxepct5/binomial_toymodel_01-20241101120108_1.csv
+Chain [1] diagnostic_file =  (Default)
+Chain [1] refresh = 100 (Default)
+Chain [1] sig_figs = -1 (Default)
+Chain [1] profile_file = profile.csv (Default)
+Chain [1] save_cmdstan_config = false (Default)
+Chain [1] num_threads = 1 (Default)
+Chain [1] 
+Chain [2] sample
+Chain [2] num_samples = 1000 (Default)
+Chain [2] num_warmup = 1000 (Default)
+Chain [2] save_warmup = false (Default)
+Chain [2] thin = 1 (Default)
+Chain [2] adapt
+Chain [2] engaged = true (Default)
+Chain [2] gamma = 0.05 (Default)
+Chain [2] delta = 0.8 (Default)
+Chain [2] kappa = 0.75 (Default)
+Chain [2] t0 = 10 (Default)
+Chain [2] init_buffer = 75 (Default)
+Chain [2] term_buffer = 50 (Default)
+Chain [2] window = 25 (Default)
+Chain [2] save_metric = false (Default)
+Chain [2] algorithm = hmc (Default)
+Chain [2] hmc
+Chain [2] engine = nuts (Default)
+Chain [2] nuts
+Chain [2] max_depth = 10 (Default)
+Chain [2] metric = diag_e (Default)
+Chain [2] metric_file =  (Default)
+Chain [2] stepsize = 1 (Default)
+Chain [2] stepsize_jitter = 0 (Default)
+Chain [2] num_chains = 1 (Default)
+Chain [2] id = 2
+Chain [2] data
+Chain [2] file = /tmp/tmpbd3i87cn/m4hm5zyi.json
+Chain [2] init = 2 (Default)
+Chain [2] random
+Chain [2] seed = 26068
+Chain [4] method = sample (Default)
+Chain [1] 
+Chain [1] Gradient evaluation took 4e-06 seconds
+Chain [1] 1000 transitions using 10 leapfrog steps per transition would take 0.04 seconds.
+Chain [1] Adjust your expectations accordingly!
+Chain [1] 
+Chain [1] 
+Chain [4] sample
+Chain [4] num_samples = 1000 (Default)
+Chain [4] num_warmup = 1000 (Default)
+Chain [4] save_warmup = false (Default)
+Chain [4] thin = 1 (Default)
+Chain [4] adapt
+Chain [4] engaged = true (Default)
+Chain [4] gamma = 0.05 (Default)
+Chain [4] delta = 0.8 (Default)
+Chain [4] kappa = 0.75 (Default)
+Chain [4] t0 = 10 (Default)
+Chain [4] init_buffer = 75 (Default)
+Chain [4] term_buffer = 50 (Default)
+Chain [4] window = 25 (Default)
+Chain [4] save_metric = false (Default)
+Chain [4] algorithm = hmc (Default)
+Chain [4] hmc
+Chain [4] engine = nuts (Default)
+Chain [4] nuts
+Chain [4] max_depth = 10 (Default)
+Chain [4] metric = diag_e (Default)
+Chain [4] metric_file =  (Default)
+Chain [4] stepsize = 1 (Default)
+Chain [4] stepsize_jitter = 0 (Default)
+Chain [4] num_chains = 1 (Default)
+Chain [4] id = 4
+Chain [4] data
+Chain [4] file = /tmp/tmpbd3i87cn/m4hm5zyi.json
+Chain [4] init = 2 (Default)
+Chain [4] random
+Chain [4] seed = 26068
+Chain [4] output
+Chain [4] file = /tmp/tmpbd3i87cn/binomial_toymodel_013uxepct5/binomial_toymodel_01-20241101120108_4.csv
+Chain [4] diagnostic_file =  (Default)
+Chain [4] refresh = 100 (Default)
+Chain [4] sig_figs = -1 (Default)
+Chain [4] profile_file = profile.csv (Default)
+Chain [4] save_cmdstan_config = false (Default)
+Chain [4] num_threads = 1 (Default)
+Chain [4] 
+Chain [1] Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain [2] output
+Chain [2] file = /tmp/tmpbd3i87cn/binomial_toymodel_013uxepct5/binomial_toymodel_01-20241101120108_2.csv
+Chain [2] diagnostic_file =  (Default)
+Chain [2] refresh = 100 (Default)
+Chain [2] sig_figs = -1 (Default)
+Chain [2] profile_file = profile.csv (Default)
+Chain [2] save_cmdstan_config = false (Default)
+Chain [2] num_threads = 1 (Default)
+Chain [2] 
+Chain [2] 
+Chain [2] Gradient evaluation took 4e-06 seconds
+Chain [2] 1000 transitions using 10 leapfrog steps per transition would take 0.04 seconds.
+Chain [2] Adjust your expectations accordingly!
+Chain [2] 
+Chain [2] 
+Chain [2] Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain [3] method = sample (Default)
+Chain [1] Iteration:  100 / 2000 [  5%]  (Warmup)
+Chain [3] sample
+Chain [3] num_samples = 1000 (Default)
+Chain [3] num_warmup = 1000 (Default)
+Chain [3] save_warmup = false (Default)
+Chain [3] thin = 1 (Default)
+Chain [3] adapt
+Chain [3] engaged = true (Default)
+Chain [3] gamma = 0.05 (Default)
+Chain [3] delta = 0.8 (Default)
+Chain [3] kappa = 0.75 (Default)
+Chain [3] t0 = 10 (Default)
+Chain [3] init_buffer = 75 (Default)
+Chain [3] term_buffer = 50 (Default)
+Chain [3] window = 25 (Default)
+Chain [3] save_metric = false (Default)
+Chain [3] algorithm = hmc (Default)
+Chain [3] hmc
+Chain [3] engine = nuts (Default)
+Chain [3] nuts
+Chain [2] Iteration:  100 / 2000 [  5%]  (Warmup)
+Chain [3] max_depth = 10 (Default)
+Chain [4] 
+Chain [3] metric = diag_e (Default)
+Chain [3] metric_file =  (Default)
+Chain [3] stepsize = 1 (Default)
+Chain [3] stepsize_jitter = 0 (Default)
+Chain [3] num_chains = 1 (Default)
+Chain [3] id = 3
+Chain [3] data
+Chain [3] file = /tmp/tmpbd3i87cn/m4hm5zyi.json
+Chain [3] init = 2 (Default)
+Chain [3] random
+Chain [3] seed = 26068
+Chain [3] output
+Chain [3] file = /tmp/tmpbd3i87cn/binomial_toymodel_013uxepct5/binomial_toymodel_01-20241101120108_3.csv
+Chain [3] diagnostic_file =  (Default)
+Chain [3] refresh = 100 (Default)
+Chain [3] sig_figs = -1 (Default)
+Chain [3] profile_file = profile.csv (Default)
+Chain [3] save_cmdstan_config = false (Default)
+Chain [3] num_threads = 1 (Default)
+Chain [3] 
+Chain [4] Gradient evaluation took 2e-06 seconds
+Chain [4] 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
+Chain [4] Adjust your expectations accordingly!
+Chain [4] 
+Chain [4] 
+Chain [4] Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain [1] Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain [3] 
+Chain [3] Gradient evaluation took 2e-06 seconds
+Chain [3] 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
+Chain [3] Adjust your expectations accordingly!
+Chain [2] Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain [3] 
+Chain [3] 
+Chain [4] Iteration:  100 / 2000 [  5%]  (Warmup)
+Chain [3] Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain [1] Iteration:  300 / 2000 [ 15%]  (Warmup)
+Chain [2] Iteration:  300 / 2000 [ 15%]  (Warmup)
+Chain [4] Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain [3] Iteration:  100 / 2000 [  5%]  (Warmup)
+Chain [1] Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain [2] Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain [4] Iteration:  300 / 2000 [ 15%]  (Warmup)
+Chain [3] Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain [1] Iteration:  500 / 2000 [ 25%]  (Warmup)
+Chain [2] Iteration:  500 / 2000 [ 25%]  (Warmup)
+Chain [4] Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain [3] Iteration:  300 / 2000 [ 15%]  (Warmup)
+Chain [1] Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain [2] Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain [4] Iteration:  500 / 2000 [ 25%]  (Warmup)
+Chain [1] Iteration:  700 / 2000 [ 35%]  (Warmup)
+Chain [3] Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain [2] Iteration:  700 / 2000 [ 35%]  (Warmup)
+Chain [4] Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain [1] Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain [3] Iteration:  500 / 2000 [ 25%]  (Warmup)
+Chain [2] Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain [1] Iteration:  900 / 2000 [ 45%]  (Warmup)
+Chain [4] Iteration:  700 / 2000 [ 35%]  (Warmup)
+Chain [3] Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain [2] Iteration:  900 / 2000 [ 45%]  (Warmup)
+Chain [4] Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain [1] Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain [1] Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain [3] Iteration:  700 / 2000 [ 35%]  (Warmup)
+Chain [2] Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain [4] Iteration:  900 / 2000 [ 45%]  (Warmup)
+Chain [2] Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain [3] Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain [4] Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain [4] Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain [1] Iteration: 1100 / 2000 [ 55%]  (Sampling)
+Chain [3] Iteration:  900 / 2000 [ 45%]  (Warmup)
+Chain [2] Iteration: 1100 / 2000 [ 55%]  (Sampling)
+Chain [3] Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain [3] Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain [4] Iteration: 1100 / 2000 [ 55%]  (Sampling)
+Chain [1] Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain [2] Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain [3] Iteration: 1100 / 2000 [ 55%]  (Sampling)
+Chain [1] Iteration: 1300 / 2000 [ 65%]  (Sampling)
+Chain [4] Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain [2] Iteration: 1300 / 2000 [ 65%]  (Sampling)
+Chain [3] Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain [4] Iteration: 1300 / 2000 [ 65%]  (Sampling)
+Chain [1] Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain [2] Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain [3] Iteration: 1300 / 2000 [ 65%]  (Sampling)
+Chain [1] Iteration: 1500 / 2000 [ 75%]  (Sampling)
+Chain [4] Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain [2] Iteration: 1500 / 2000 [ 75%]  (Sampling)
+Chain [1] Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain [3] Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain [4] Iteration: 1500 / 2000 [ 75%]  (Sampling)
+Chain [2] Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain [1] Iteration: 1700 / 2000 [ 85%]  (Sampling)
+Chain [4] Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain [3] Iteration: 1500 / 2000 [ 75%]  (Sampling)
+Chain [2] Iteration: 1700 / 2000 [ 85%]  (Sampling)
+Chain [1] Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain [4] Iteration: 1700 / 2000 [ 85%]  (Sampling)
+Chain [3] Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain [2] Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain [1] Iteration: 1900 / 2000 [ 95%]  (Sampling)
+Chain [4] Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain [3] Iteration: 1700 / 2000 [ 85%]  (Sampling)
+Chain [2] Iteration: 1900 / 2000 [ 95%]  (Sampling)
+Chain [1] Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain [1] 
+Chain [1] Elapsed Time: 0.008 seconds (Warm-up)
+Chain [1] 0.016 seconds (Sampling)
+Chain [1] 0.024 seconds (Total)
+Chain [1] 
+Chain [4] Iteration: 1900 / 2000 [ 95%]  (Sampling)
+Chain [3] Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [1] 
+Chain [2] Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain [2] 
+Chain [2] Elapsed Time: 0.009 seconds (Warm-up)
+Chain [2] 0.017 seconds (Sampling)
+Chain [2] 0.026 seconds (Total)
+Chain [2] 
+Chain [1] 
+Chain [2] 
+Chain [4] Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain [3] Iteration: 1900 / 2000 [ 95%]  (Sampling)
+Chain [4] 
+Chain [4]  Elapsed Time: 0.008 seconds (Warm-up)
+Chain [4]                0.017 seconds (Sampling)
+Chain [4]                0.025 seconds (Total)
+Chain [4] 
+Chain [4] 
+Chain [3] Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain [3] 
+Chain [3] Elapsed Time: 0.008 seconds (Warm-up)
+Chain [3] 0.019 seconds (Sampling)
+Chain [3] 0.027 seconds (Total)
+Chain [3] 
+Chain [3] </code></pre>
+</div>
+</div>
+<div id="fd46a244" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fit.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
 
 
-</section>
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Mean</th>
+<th data-quarto-table-cell-role="th">MCSE</th>
+<th data-quarto-table-cell-role="th">StdDev</th>
+<th data-quarto-table-cell-role="th">5%</th>
+<th data-quarto-table-cell-role="th">50%</th>
+<th data-quarto-table-cell-role="th">95%</th>
+<th data-quarto-table-cell-role="th">N_Eff</th>
+<th data-quarto-table-cell-role="th">N_Eff/s</th>
+<th data-quarto-table-cell-role="th">R_hat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">lp__</td>
+<td>-14.263100</td>
+<td>0.017512</td>
+<td>0.718309</td>
+<td>-15.743200</td>
+<td>-13.993000</td>
+<td>-13.762900</td>
+<td>1682.43</td>
+<td>24383.0</td>
+<td>1.00052</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">theta</td>
+<td>0.316506</td>
+<td>0.002404</td>
+<td>0.095760</td>
+<td>0.165167</td>
+<td>0.310247</td>
+<td>0.481013</td>
+<td>1586.53</td>
+<td>22993.3</td>
+<td>1.00275</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+
+
 
 </main> <!-- /main -->
 <script>
@@ -865,14 +1275,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../index.html" class="pagination-link" aria-label="Welcome">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Welcome</span>
+      <a href="../../posts/bayesianstatistics101/chapter_header.html" class="pagination-link" aria-label="Bayesian methods">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Bayesian methods</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../posts/bayesianstatistics101/binomial_toymodel.html" class="pagination-link" aria-label="二項分布を用いたベイジアンモデリング">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">二項分布を用いたベイジアンモデリング</span></span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->
@@ -892,7 +1299,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </a>
   </li>  
 </ul>
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/RyoNakagami/cmdstan_for_regression_monkey/edit/main/posts/bayesianstatistics101/chapter_header.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/RyoNakagami/cmdstan_for_regression_monkey/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions"><ul><li><a href="https://github.com/RyoNakagami/cmdstan_for_regression_monkey/edit/main/posts/bayesianstatistics101/binomial_toymodel.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/RyoNakagami/cmdstan_for_regression_monkey/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
