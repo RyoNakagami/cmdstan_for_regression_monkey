@@ -1,8 +1,7 @@
-name: 🐞 Bug report
-description: Create a report to help us improve
-title: "[BUG] <title>"
+name: 🐞 Bug
+description: Report a bug or an issue
+title: "BUG: <title>"
 labels: ["bug"]
-assignees: []
 body:
   - type: textarea
     id: problem
@@ -12,19 +11,28 @@ body:
         Please provide a description of the issue shown in the reproducible example.
     validations:
       required: true
-
   - type: textarea
+    id: version
     attributes:
-      label: Expected behavior
-      description: A clear and concise description of what you expected to happen.
-      placeholder: Describe the expected behavior
-
+      label: Installed Versions
+      value: |
+        Please provide an infor of the version, branch or commit-id where the bugs happen.
+    validations:
+      required: true
   - type: textarea
+    id: current_behavior
     attributes:
-      label: Screenshots
-      description: If applicable, add screenshots to help explain your problem.
-      placeholder: Add screenshots here
-
+      label: Current Behavior
+      description: A concise description of what you're experiencing.
+    validations:
+      required: true
+  - type: textarea
+    id: exptected_behavior
+    attributes:
+      label: Expected Behavior
+      description: A concise description of what you expected to happen.
+    validations:
+      required: true
   - type: textarea
     id: step_for_reproduction
     attributes:
@@ -35,6 +43,14 @@ body:
         2. With this config...
         3. Run '...'
         4. See error...
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: |
+        If applicable, log output to help explain your problem.
     validations:
       required: false
   - type: textarea
