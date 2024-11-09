@@ -43,3 +43,10 @@ _book
 __pycache__/
 .pytest_cache/
 .ipynb_checkpoints
+
+
+# ---------------------
+# cmdstanpy setting
+# ---------------------
+stancode/*
+!stancode/*.stan
