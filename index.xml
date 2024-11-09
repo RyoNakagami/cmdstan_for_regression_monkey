@@ -12,7 +12,7 @@
 <generator>quarto-1.5.57</generator>
 <lastBuildDate>Fri, 01 Nov 2024 00:00:00 GMT</lastBuildDate>
 <item>
-  <title>1  二項分布を用いたベイジアンモデリング</title>
+  <title>1  ワクチン接種施策とベイジアン意思決定</title>
   <dc:creator>Ryo Nakagami</dc:creator>
   <link>https://ryonakagami.github.io/cmdstan_for_regression_monkey/posts/bayesianstatistics101/binomial_toymodel.html</link>
   <description><![CDATA[ 
@@ -20,138 +20,507 @@
 
 
 
-<div id="0d320989" class="cell" data-execution_count="1">
+<section id="感染症有病率推定量と意思決定" class="level2">
+<h2 class="anchored" data-anchor-id="感染症有病率推定量と意思決定">感染症有病率推定量と意思決定</h2>
+<div class="blog-custom-border">
+<div id="exr-" class="custom_problem theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 1.1</strong></span> <br></p>
+<p>人口 <img src="https://latex.codecogs.com/png.latex?1000"> 人からなる地域Aの公衆衛生政策担当者を想定します．とある感染症が世界的に流行しており，公衆衛生担当者として全市民にワクチン接種を強制するか否かの意思決定に直面しています．</p>
+<p><strong> ▶&nbsp; 政策意思決定に関連する情報</strong></p>
+<p>政策意思決定に関連する情報として以下のことがわかっています</p>
+<ul>
+<li>ワクチンの費用は摂取人数あたり100円（=つまり，ワクチンを矯正すると一人あたり施策実施費用は100円，otherwise 0円）</li>
+<li>健康な人の一人あたりのGDPは1000円だが，感染症に罹患すると500円まで下がる</li>
+<li>感染症に罹患した人にワクチンを投与すると，一人あたりのGDPは500円→1000円まで回復する</li>
+</ul>
+<p><strong> ▶&nbsp; 仮定</strong></p>
+<p>地域の住民 <img src="https://latex.codecogs.com/png.latex?i"> が感染症に罹患しているか否かを表す確率変数 <img src="https://latex.codecogs.com/png.latex?Y_i"> は</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AY_i%20%5Coverset%7B%5Cmathrm%7Biid%7D%7D%7B%5Csim%7D%20%5Coperatorname%7BBernoulli%7D(%5Ctheta)%0A"></p>
+<p>そして，街全体の感染者人数を</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AY%20=%20%5Csum_%7Bi=1%7D%5E%7B1000%7D%20Y_i%0A"></p>
+<p>と表すとします．<img src="https://latex.codecogs.com/png.latex?%5Ctheta"> は公衆衛生政策担当者にとっては未知であるが，事前の情報として，少し古い情報だが地域Aと似たような地域では 平均 <img src="https://latex.codecogs.com/png.latex?0.1">, 区間 <img src="https://latex.codecogs.com/png.latex?0.01"> から <img src="https://latex.codecogs.com/png.latex?0.25"> の間で分布していることがわかっているとします．</p>
+<p><strong> ▶&nbsp; 直面している意思決定問題</strong></p>
+<p>Decision変数 <img src="https://latex.codecogs.com/png.latex?d"> を以下のように表すとする</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Balign*%7D%0Ad%20=%20%5Cleft%5C%7B%5Cbegin%7Barray%7D%7Bc%7D%0A1%20&amp;%20%5Ctext%7B%E3%83%AF%E3%82%AF%E3%83%81%E3%83%B3%E6%8E%A5%E7%A8%AE%E5%BC%B7%E5%88%B6%7D%5C%5C%0A0%20&amp;%20%5Ctext%7Botherwise%7D%0A%5Cend%7Barray%7D%5Cright.%20%20%0A%5Cend%7Balign*%7D%0A"></p>
+<p>地域Aの <img src="https://latex.codecogs.com/png.latex?U%20=%20%5Ctext%7BGDP%7D(Y,%20d)%20-%20%5Ctext%7B%E6%96%BD%E7%AD%96%E8%B2%BB%E7%94%A8%7D%5Ctimes%20d"> の期待値を最大化する観点から公衆衛生政策担当者は <img src="https://latex.codecogs.com/png.latex?d"> をどのように決定すればよいか？</p>
+</div>
+</div>
+<p><br></p>
+<p>データに基づいて公衆衛生政策担当者の行う判断を決定(decision)とするとき，その決定は <img src="https://latex.codecogs.com/png.latex?d"> という変数で上記のように表されています．このとき，決定 <img src="https://latex.codecogs.com/png.latex?d"> の集合について一般に<strong>決定空間</strong>とと呼び，多くの場合 <img src="https://latex.codecogs.com/png.latex?D"> で表されます．</p>
+<p>問題設定より，決定空間 <img src="https://latex.codecogs.com/png.latex?D"> は</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AD%20=%20%5C%7B%5Ctext%7B%E4%BD%8F%E6%B0%91%E3%81%B8%E3%81%AE%E3%83%AF%E3%82%AF%E3%83%81%E3%83%B3%E6%8E%A5%E7%A8%AE%E5%BC%B7%E5%88%B6%E5%AE%9F%E6%96%BD%7D,%20%5Ctext%7B%E4%BD%8F%E6%B0%91%E3%81%B8%E3%81%AE%E3%83%AF%E3%82%AF%E3%83%81%E3%83%B3%E6%8E%A5%E7%A8%AE%E5%BC%B7%E5%88%B6%E4%B8%8D%E5%AE%9F%E6%96%BD%7D%5C%7D%0A"></p>
+<p>となります．</p>
+<p><strong> ▶&nbsp; パラメータ空間</strong></p>
+<p>意思決定にあたって関心があるのは，街で感染した人の割合 <img src="https://latex.codecogs.com/png.latex?%5Ctheta"> です．大まかに言えば，<img src="https://latex.codecogs.com/png.latex?%5Ctheta"> のパラメーター空間 <img src="https://latex.codecogs.com/png.latex?%5CTheta"> は0と1の間のすべての値になるので</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5CTheta%20=%20%5B0,%201%5D%0A"></p>
+<p><strong> ▶&nbsp; 損失関数</strong></p>
+<p>地域Aの <img src="https://latex.codecogs.com/png.latex?U%20=%20%5Ctext%7BGDP%7D%20-%20%5Ctext%7B%E6%96%BD%E7%AD%96%E8%B2%BB%E7%94%A8%7D"> の期待値の最大化問題は，</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Balign*%7D%0A%5Cmathop%7B%5Cmathrm%7Bargmax%7D%7D_d%5C,%20%5Cmathbb%20E%5BU%5D%0A%20%20%20%20&amp;=%20%5Cmathbb%20E%5B%5Csum_%7Bi=1%7D%5E%7B1000%7D%20(%5Ctext%7BGDP%7D(Y,%20d)_i%20-%20100d)%5D%5C%5C%0A%20%20%20%20&amp;=%20%5Csum_%7Bi=1%7D%5E%7B1000%7D%5Cmathbb%20E%5B%5Ctext%7BGDP%7D(Y_i,%20d)_i%20-%20100d%5D%5C%5C%0A%20%20%20%20&amp;=%201000%20%5Ctimes%20%5Cmathbb%20E%5B%5Ctext%7BGDP%7D(Y_i,%20d)_i%20-%20100d%5D%0A%5Cend%7Balign*%7D%0A"></p>
+<p>したがって，</p>
+<p><span id="eq-objective-func"><img src="https://latex.codecogs.com/png.latex?%0A%5Cmathop%7B%5Cmathrm%7Bargmax%7D%7D_d%5C,%20%5Cmathbb%20E%5B%5Ctext%7BGDP%7D_i(Y_i,%20d)%20-%20100d%5D%0A%5Ctag%7B1.1%7D"></span></p>
+<p>の問題を解けば良いことがわかります．最大化問題の形式でも良いですが，これを損失関数の形で表現し直します．このとき， <img src="https://latex.codecogs.com/png.latex?c_%7Bij%7D"> を成分とする損失行列 <img src="https://latex.codecogs.com/png.latex?C"> は</p>
+<table>
+<thead>
+<tr>
+<th colspan="1" rowspan="2" style="border-width: 1px; width: 350px; text-align: center;">
+<p style="text-align: center;">
+<span>&nbsp;</span>
+</p>
+</th>
+</tr>
+<tr>
+<th style="border-width: 1px; width: 350px; text-align: center;">
+<p dir="ltr" style="text-align: center;">
+<span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><img src="https://latex.codecogs.com/png.latex?Y_i=1"></font></font></span>
+</p>
+</th>
+<th style="border-width: 1px; width: 350px; text-align: center;">
+<p dir="ltr" style="text-align: center;">
+<span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><img src="https://latex.codecogs.com/png.latex?Y_i=0"></font></font></span>
+</p>
+
+</th></tr>
+<tr>
+<th style="border-width: 1px; width: 233.333px; text-align: center;">
+<p dir="ltr" style="text-align: center;">
+<span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><img src="https://latex.codecogs.com/png.latex?d=1"></font></font></span>
+</p>
+</th>
+<th style="border-width: 1px; width: 175px; text-align: center;">
+<p dir="ltr" style="text-align: center;">
+<span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><img src="https://latex.codecogs.com/png.latex?100"></font></font></span>
+</p>
+</th>
+<td style="border-width: 1px; width: 175px; text-align: center;">
+<p dir="ltr" style="text-align: center;">
+<span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"></font><img src="https://latex.codecogs.com/png.latex?100"></font></span><br><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"></font></font></span>
+</p>
+</td>
+</tr>
+<tr>
+<th style="border-width: 1px; width: 233.333px; text-align: center;">
+<p dir="ltr" style="text-align: center;">
+<span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><img src="https://latex.codecogs.com/png.latex?d=0"></font></font></span>
+</p>
+</th>
+<th style="border-width: 1px; width: 175px; text-align: center;">
+<p dir="ltr" style="text-align: center;">
+<span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><img src="https://latex.codecogs.com/png.latex?500"></font></font></span>
+</p>
+</th>
+<td style="border-width: 1px; width: 175px; text-align: center;">
+<p dir="ltr" style="text-align: center;">
+<span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"></font><img src="https://latex.codecogs.com/png.latex?0"></font></span><br><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"></font></font></span>
+</p>
+</td>
+</tr>
+
+</thead></table>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?Y_i=0,%20Y_i=1"> のどちらでも <img src="https://latex.codecogs.com/png.latex?d=1"> のときは一人あたりGDPは <img src="https://latex.codecogs.com/png.latex?1000">, but 施策費用 <img src="https://latex.codecogs.com/png.latex?100"> が発生 → 損失は <img src="https://latex.codecogs.com/png.latex?100"></li>
+<li><img src="https://latex.codecogs.com/png.latex?Y_i=1"> のとき <img src="https://latex.codecogs.com/png.latex?d=0"> は 一人あたりGDPが <img src="https://latex.codecogs.com/png.latex?1000%20%5Cto%20500"> へ下がる → 損失は <img src="https://latex.codecogs.com/png.latex?500"></li>
+</ul>
+<p>このコスト行列をベースにワクチン接種強制についての決定変数 <img src="https://latex.codecogs.com/png.latex?d"> に応じた損失関数 <img src="https://latex.codecogs.com/png.latex?L(d)"> を用いて@eq-objective-func を表現し直すと</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cmathop%7B%5Cmathrm%7Bargmin%7D%7D_d%5C,%20%5Cmathbb%20E%5BL(d)%5D%20=%20%5Csum_%7Bj%5Cin%5C%7B0,%201%5C%7D%7D%20C(d,%20Y_i=j)p(Y_i%20=j)%0A"></p>
+<p><img src="https://latex.codecogs.com/png.latex?d"> に応じた損失関数 <img src="https://latex.codecogs.com/png.latex?L(d)"> の期待値を計算すると</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Balign*%7D%0A%5Cmathbb%20E%5BL(d=1)%5D%20&amp;=%20100%5C%5C%0A%5Cmathbb%20E%5BL(d=0)%5D%20&amp;=%20500%20%5Ctimes%20%5Cmathbb%20E%5BY_i%20=%201%5D%20=%20500%20%5Ctimes%20p(Y_i%20=%201)%0A%5Cend%7Balign*%7D%0A"></p>
+<p>ここから損失最小化問題の解として</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0Ad%20=%20%5Cleft%5C%7B%5Cbegin%7Barray%7D%7Bc%7D%0A1%20&amp;%20%5Ctext%7Bif%20%7D%20p(Y_i%20=%201)%20%3E%200.2%5C%5C%0A%5C%7B0,%201%5C%7D%20&amp;%20%5Ctext%7Bif%20%7D%20p(Y_i%20=%201)%20=%200.2%5C%5C%0A0%20&amp;%20%5Ctext%7Bif%20%7D%20p(Y_i%20=%201)%20%3C%200.2%0A%5Cend%7Barray%7D%5Cright.%0A"></p>
+<p>となることがわかります．</p>
+<p><strong> ▶&nbsp; <img src="https://latex.codecogs.com/png.latex?p(Y_i=1)">と信念</strong></p>
+<p>問題文より</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AY_i%20%5Coverset%7B%5Cmathrm%7Biid%7D%7D%7B%5Csim%7D%20%5Coperatorname%7BBernoulli%7D(%5Ctheta)%0A"></p>
+<p>したがって，<img src="https://latex.codecogs.com/png.latex?p(Y_i=1)%20=%20%5Ctheta"> となりますが，<img src="https://latex.codecogs.com/png.latex?%5Ctheta"> は政策担当者にとって未知の変数です．</p>
+<p>一方，<img src="https://latex.codecogs.com/png.latex?%5Ctheta"> について「少し古い情報だが地域Aと似たような地域では 平均 <img src="https://latex.codecogs.com/png.latex?0.1">, 区間 <img src="https://latex.codecogs.com/png.latex?0.01"> から <img src="https://latex.codecogs.com/png.latex?0.25"> の間で分布している」という情報があります． この政策担当者の <img src="https://latex.codecogs.com/png.latex?%5Ctheta"> に対する事前の信念が<img src="https://latex.codecogs.com/png.latex?p(%5Ctheta)"> という形で表現されるとします．このとき，</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Balign*%7D%0Ap(Y_i=1)%0A%20%20%20%20&amp;=%20%5Cint_%5CTheta%20p(Y_i%20=%201,%20%5Ctheta)%20%5C,%5Cmathrm%7Bd%7D%20%5Ctheta%5C%5C%0A%20%20%20%20&amp;=%20%5Cint_%5CTheta%20p(Y_i%20=%201%5Cvert%20%5Ctheta)%20p(%5Ctheta)%20%5C,%5Cmathrm%7Bd%7D%20%5Ctheta%5C%5C%0A%20%20%20%20&amp;=%20%5Cint_%5CTheta%20%5Ctheta%20p(%5Ctheta)%20%5C,%5Cmathrm%7Bd%7D%20%5Ctheta%5C%5C%0A%20%20%20%20&amp;=%20%5Cmathbb%20E%5B%5Ctheta%5D%0A%5Cend%7Balign*%7D%0A"></p>
+<p>「少し古い情報だが地域Aと似たような地域では 平均 <img src="https://latex.codecogs.com/png.latex?0.1">, 区間 <img src="https://latex.codecogs.com/png.latex?0.01"> から <img src="https://latex.codecogs.com/png.latex?0.25"> の間で分布している」を表す政策担当者の信念を表す分布 <img src="https://latex.codecogs.com/png.latex?p(%5Ctheta)"> は無数に存在し得りますが， 「あやゆるモデルは誤りであるが，いくつかは有用である」(Box and Draper, 11987)という格言に従って，信念を近似する関数を</p>
+<p><span id="eq-prior-beta"><img src="https://latex.codecogs.com/png.latex?%0A%5Ctheta%20%5Csim%20%5Coperatorname%7BBeta%7D(2,%2018)%0A%5Ctag%7B1.2%7D"></span></p>
+<p>などで近似し，観察データに基づいて信念を更新，更新された信念に基いて意思決定をしていきます．</p>
+<p><strong> ▶&nbsp; ベータ分布による信念の近似</strong></p>
+<p>Equation&nbsp;<span>1.2</span> を政策担当者の信念の近似分布とすると以下のようなPDF, CDFになります．</p>
+<div id="993cf78d" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
+font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> np</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> scipy.stats <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> beta</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> plt</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> regmonkey_style.stylewizard <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> sw</span>
+<span id="cb1-5"></span>
+<span id="cb1-6">sw.set_templates(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"regmonkey_scatter"</span>)</span>
+<span id="cb1-7"></span>
+<span id="cb1-8">a <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span></span>
+<span id="cb1-9">b<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">18</span></span>
+<span id="cb1-10"></span>
+<span id="cb1-11">x <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.linspace(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">200</span>)</span>
+<span id="cb1-12">rv <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> beta(a, b)</span>
+<span id="cb1-13"></span>
+<span id="cb1-14">fig, ax1 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb1-15">ax2 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ax1.twinx()</span>
+<span id="cb1-16"></span>
+<span id="cb1-17">ax1.plot(x, rv.pdf(x))</span>
+<span id="cb1-18">ax2.plot(x, rv.cdf(x), color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'gray'</span>)</span>
+<span id="cb1-19">ax1.set_xlabel(<span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">r'$\theta$'</span>)</span>
+<span id="cb1-20">ax1.set_ylabel(<span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">r'density'</span>)</span>
+<span id="cb1-21">ax2.set_ylabel(<span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">r'cumulative probability'</span>)</span>
+<span id="cb1-22"></span>
+<span id="cb1-23">ax1.set_ylim(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,)</span>
+<span id="cb1-24">ax1.set_xlim(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb1-25">ax2.set_xlim(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb1-26">ax2.set_ylim(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,)</span>
+<span id="cb1-27">ax1.spines[[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'right'</span>]].set_visible(<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb1-28">ax1.set_title(<span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">r"prior distribution of $\theta$"</span>)</span>
+<span id="cb1-29">ax1.legend(labels<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'pdf'</span>],loc<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, borderaxespad<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.</span>, bbox_to_anchor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.15</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.9</span>))</span>
+<span id="cb1-30">ax2.legend(labels<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'cdf'</span>],loc<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, borderaxespad<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.</span>, bbox_to_anchor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.15</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.95</span>))</span>
+<span id="cb1-31">plt.show()</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://ryonakagami.github.io/cmdstan_for_regression_monkey/posts/bayesianstatistics101/binomial_toymodel_files/figure-html/cell-2-output-1.png" width="721" height="458" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><img src="https://latex.codecogs.com/png.latex?X%5Csim%20%5Coperatorname%7BBeta%7D(a,%20b)"> とすると，</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Balign*%7D%0A%5Coperatorname%7Bmode%7D(X)%20&amp;=%20%5Cfrac%7Ba-1%7D%7Ba%20+%20b%20-%202%7D%5C%5C%0A%5Cmathbb%20E%5BX%5D%20&amp;=%20%5Cfrac%7Ba%7D%7Ba+b%7D%0A%5Cend%7Balign*%7D%0A"></p>
+<p>であるので，<img src="https://latex.codecogs.com/png.latex?%5Cmathbb%20E%5B%5Ctheta%5D%20=%20%5Cfrac%7B2%7D%7B2+18%7D%20=%200.1"> となるので 「少し古い情報だが地域Aと似たような地域では 平均 <img src="https://latex.codecogs.com/png.latex?0.1">, 区間 <img src="https://latex.codecogs.com/png.latex?0.01"> から <img src="https://latex.codecogs.com/png.latex?0.25"> の間で分布している」という情報をある程度近似していると判断することができます．また，区間 <img src="https://latex.codecogs.com/png.latex?0.01"> から <img src="https://latex.codecogs.com/png.latex?0.25"> の確率は</p>
+<div id="a08c1a9d" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> IPython.display <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> display, Markdown</span>
+<span id="cb2-2"></span>
+<span id="cb2-3">prob <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> rv.cdf(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.25</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> rv.cdf(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span>)</span>
+<span id="cb2-4">display(Markdown(<span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">rf"$Pr(0.01 \leq \theta \leq 0.25) = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>prob<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:.4f}</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">$"</span>))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><img src="https://latex.codecogs.com/png.latex?Pr(0.01%20%5Cleq%20%5Ctheta%20%5Cleq%200.25)%20=%200.9537"></p>
+</div>
+</div>
+</section>
+<section id="事前分布の更新" class="level2">
+<h2 class="anchored" data-anchor-id="事前分布の更新">事前分布の更新</h2>
+<p>ワクチン接種強制の意思決定をするにあたって，地域Aの住民から無作為に43人選び感染の検査を行うことにした． 感染者人数がデータ <img src="https://latex.codecogs.com/png.latex?x"> で表されるとき，その標本空間 <img src="https://latex.codecogs.com/png.latex?%5Cmathcal%7BX%7D"> は</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cmathcal%7BX%7D%20=%20%5C%7B0,%201,%20%5Ccdots,%2043%5C%7D%0A"></p>
+<p>また標本モデルは</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AX%20%5Cvert%20%5Ctheta%20%5Csim%20%5Coperatorname%7Bbinomial%7D(43,%20%5Ctheta)%0A"></p>
+<p><strong> ▶&nbsp; ベイズルールに基づく事後分布の更新</strong></p>
+<p>ベイズルールより <img src="https://latex.codecogs.com/png.latex?X"> を観測した後の <img src="https://latex.codecogs.com/png.latex?%5Ctheta"> に関する事後分布は，<img src="https://latex.codecogs.com/png.latex?p(%5Ctheta)"> を事前分布とすると</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0Ap(%5Ctheta%5Cvert%20X)%20=%20%5Cfrac%7Bp(X%5Cvert%20%5Ctheta)p(%5Ctheta)%7D%7Bp(X)%7D%0A"></p>
+<p>また，</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Balign*%7D%0Ap(X)%20&amp;=%20%5Cint%5E1_0%20%7B_%7Bn%7D%7DC_x%20%5Ctheta%5Ex(1-%5Ctheta)%5E%7Bn-x%7D%20p(%5Ctheta)%20%5C,%5Cmathrm%7Bd%7D%5Ctheta%20%5C%5C%5B8pt%5D%0A&amp;=%20%5Cint%5E1_0%20%5Cfrac%7B_%7Bn%7DC_x%7D%7BB(a,%20b)%7D%20%5Ctheta%5Ex(1-%5Ctheta)%5E%7Bn-x%7D%5Ctheta%5E%7Ba%20-%201%7D(1-%5Ctheta)%5E%7Bb%20-%201%7D%5C,%5Cmathrm%7Bd%7D%5Ctheta%5C%5C%5B8pt%5D%0A&amp;=%5Cint%5E1_0%20%5Cfrac%7B_%7Bn%7DC_x%7D%7BB(a,%20b)%7D%20%5Ctheta%5E%7Ba+x-1%7D(1-%5Ctheta)%5E%7Bb%20+%20n-x%20-%201%7D%5C,%5Cmathrm%7Bd%7D%5Ctheta%5C%5C%0A&amp;=%20%5Cfrac%7B_%7Bn%7DC_x%7D%7BB(a,%20b)%7DB(a%20+%20x,%20b%20+%20n%20-%20x)%0A%5Cend%7Balign*%7D%0A"></p>
+<p>したがって，事後分布 <img src="https://latex.codecogs.com/png.latex?p(%5Ctheta%5Cvert%20X)"> は</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Balign*%7D%0Ap(%5Ctheta%5Cvert%20X)%0A%20%20%20%20=%20%5Cfrac%7B1%7D%7BB(a+x,%20b+n-x-1)%7D%5Ctheta%5E%7Ba+x-1%7D(1-%5Ctheta)%5E%7Bb+n-x-1%7D%0A%5Cend%7Balign*%7D%0A"></p>
+<p>よって，事後分布は以下のように更新されます</p>
+<p><span id="eq-posterior-beta"><img src="https://latex.codecogs.com/png.latex?%0A%5Ctheta%5Cvert%20X%20%5Csim%20%5Coperatorname%7BBeta%7D(a+x,%20b+n-x)%0A%5Ctag%7B1.3%7D"></span></p>
+<p><strong> ▶&nbsp; cmdstanpyによる推定</strong></p>
+<p>政策担当者が<img src="https://latex.codecogs.com/png.latex?N=43"> の調査をした結果，サンプルにおける感染者人数 <img src="https://latex.codecogs.com/png.latex?X"> は <img src="https://latex.codecogs.com/png.latex?11"> であることがわかったとします．</p>
+<p>Equation&nbsp;<span>1.2</span>, Equation&nbsp;<span>1.3</span> より</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Balign*%7D%0A%5Cmathbb%20E%5B%5Ctheta%20%5Cvert%20X%5D%20&amp;=%20%5Cfrac%7B13%7D%7B63%7D%20%5Capprox%200.20635%5C%5C%0A%5Coperatorname%7Bmode%7D(%5Ctheta%20%5Cvert%20X)%20&amp;=%20%5Cfrac%7B12%7D%7B61%7D%20%5Capprox%200.1967%0A%5Cend%7Balign*%7D%0A"></p>
+<p>となるはずです．これをcmdstanpyで計算します．stan modelを以下のように記述します．</p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode stan code-with-copy"><code class="sourceCode stan"><span id="cb3-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">data</span> {</span>
+<span id="cb3-2">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span>&lt;<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">lower</span>=<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>&gt; N; <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// number of observations</span></span>
+<span id="cb3-3">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// array[N] int&lt;lower=0, upper=1&gt; Y; // outcomes</span></span>
+<span id="cb3-4">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span>&lt;<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">lower</span>=<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>&gt; X;</span>
+<span id="cb3-5">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">real</span>&lt;<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">lower</span>=<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>&gt; alpha; <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// prior hyperparameter</span></span>
+<span id="cb3-6">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">real</span>&lt;<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">lower</span>=<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>&gt; beta; <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// prior hyperparameter</span></span>
+<span id="cb3-7"></span>
+<span id="cb3-8">}</span>
+<span id="cb3-9"></span>
+<span id="cb3-10"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">parameters</span> {</span>
+<span id="cb3-11">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">real</span>&lt;<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">lower</span>=<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">upper</span>=<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>&gt; theta; <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// probability of success</span></span>
+<span id="cb3-12">}</span>
+<span id="cb3-13"></span>
+<span id="cb3-14"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">model</span> {</span>
+<span id="cb3-15">    theta ~ beta(alpha, beta); <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">// prior</span></span>
+<span id="cb3-16">    X ~ binomial(N, theta);</span>
+<span id="cb3-17"></span>
+<span id="cb3-18">}</span>
+<span id="cb3-19"></span>
+<span id="cb3-20"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">generated quantities</span> {</span>
+<span id="cb3-21">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">int</span> predicted_y = bernoulli_rng(theta);</span>
+<span id="cb3-22">}</span></code></pre></div>
+<p>次に，fitさせます．</p>
+<div id="43218c00" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="im" style="color: #00769E;
+background-color: null;
 font-style: inherit;">from</span> cmdstanpy <span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> CmdStanModel</span>
-<span id="cb1-2"></span>
-<span id="cb1-3">data <span class="op" style="color: #5E5E5E;
+<span id="cb4-2"></span>
+<span id="cb4-3">data <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> {</span>
-<span id="cb1-4"> <span class="st" style="color: #20794D;
+<span id="cb4-4"> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"alpha"</span>: <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">1</span>,</span>
-<span id="cb1-5"> <span class="st" style="color: #20794D;
+font-style: inherit;">2</span>,</span>
+<span id="cb4-5"> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"beta"</span>: <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">1</span>,</span>
-<span id="cb1-6"> <span class="st" style="color: #20794D;
+font-style: inherit;">18</span>,</span>
+<span id="cb4-6"> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"N"</span> : <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">20</span>,</span>
-<span id="cb1-7"> <span class="st" style="color: #20794D;
+font-style: inherit;">43</span>,</span>
+<span id="cb4-7"> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"Y"</span> : [<span class="dv" style="color: #AD0000;
+font-style: inherit;">"X"</span> : <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>]</span>
-<span id="cb1-8">}</span>
-<span id="cb1-9"></span>
-<span id="cb1-10">model <span class="op" style="color: #5E5E5E;
+font-style: inherit;">11</span></span>
+<span id="cb4-8">}</span>
+<span id="cb4-9"></span>
+<span id="cb4-10">model <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> CmdStanModel(stan_file<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"../../stancode/binomial_toymodel_01.stan"</span>)</span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>13:19:52 - cmdstanpy - INFO - compiling stan file /home/runner/work/cmdstan_for_regression_monkey/cmdstan_for_regression_monkey/stancode/binomial_toymodel_01.stan to exe file /home/runner/work/cmdstan_for_regression_monkey/cmdstan_for_regression_monkey/stancode/binomial_toymodel_01
-13:19:57 - cmdstanpy - INFO - compiled model executable: /home/runner/work/cmdstan_for_regression_monkey/cmdstan_for_regression_monkey/stancode/binomial_toymodel_01</code></pre>
-</div>
-</div>
-<div id="a44cedaa" class="cell" data-execution_count="2">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">fit <span class="op" style="color: #5E5E5E;
+font-style: inherit;">"../../stancode/binomial_toymodel_01.stan"</span>)</span>
+<span id="cb4-11">fit <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> model.sample(data<span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">=</span>data)</span></code></pre></div>
-</details>
+font-style: inherit;">=</span>data, seed<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1212</span>)</span>
+<span id="cb4-12">fit.summary()</span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>13:19:57 - cmdstanpy - INFO - CmdStan start processing</code></pre>
+<pre><code>08:15:01 - cmdstanpy - INFO - compiling stan file /home/runner/work/cmdstan_for_regression_monkey/cmdstan_for_regression_monkey/stancode/binomial_toymodel_01.stan to exe file /home/runner/work/cmdstan_for_regression_monkey/cmdstan_for_regression_monkey/stancode/binomial_toymodel_01
+08:15:07 - cmdstanpy - INFO - compiled model executable: /home/runner/work/cmdstan_for_regression_monkey/cmdstan_for_regression_monkey/stancode/binomial_toymodel_01
+08:15:07 - cmdstanpy - INFO - CmdStan start processing</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"97e2d1be899a4cf7997fa3e48e5e16f7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"03e7f2e53b0c402992d2ffbcc0a09cc7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"ba1078317489433d8971314c4bee1f03","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"634d82a87fb5420eac79d5e9e6e89a62","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"531589b10a2c4e0ebe68dfee8a3007f7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"cb3bdd2b7347484fa2c75c5f44805e84","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"f02874dd46934cd2b2aff49806fd7e57","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"7e8eb04cbfe34114b7a9e55315ea6525","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                                                                                                                                                                                                                                                                                                                                </code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>13:19:58 - cmdstanpy - INFO - CmdStan done processing.</code></pre>
+<pre><code>08:15:07 - cmdstanpy - INFO - CmdStan done processing.</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code></code></pre>
 </div>
-</div>
-<div id="63d4524a" class="cell" data-execution_count="3">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">fit.summary()</span></code></pre></div>
-</details>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
@@ -174,27 +543,39 @@ font-style: inherit;">=</span>data)</span></code></pre></div>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">lp__</td>
-<td>-14.275500</td>
-<td>0.015855</td>
-<td>0.711406</td>
-<td>-15.740900</td>
-<td>-13.997600</td>
-<td>-13.763300</td>
-<td>2013.37</td>
-<td>29179.2</td>
-<td>0.999298</td>
+<td>-32.592600</td>
+<td>0.021198</td>
+<td>0.770842</td>
+<td>-34.073300</td>
+<td>-32.303900</td>
+<td>-32.074400</td>
+<td>1322.35</td>
+<td>22412.8</td>
+<td>1.00144</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">theta</td>
-<td>0.315622</td>
-<td>0.002438</td>
-<td>0.097188</td>
-<td>0.168943</td>
-<td>0.306752</td>
-<td>0.487377</td>
-<td>1588.71</td>
-<td>23024.8</td>
-<td>1.001390</td>
+<td>0.206433</td>
+<td>0.001319</td>
+<td>0.051222</td>
+<td>0.129039</td>
+<td>0.203101</td>
+<td>0.295836</td>
+<td>1509.17</td>
+<td>25579.1</td>
+<td>1.00249</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">predicted_y</td>
+<td>0.211750</td>
+<td>0.006514</td>
+<td>0.408600</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>1.000000</td>
+<td>3934.19</td>
+<td>66681.2</td>
+<td>1.00000</td>
 </tr>
 </tbody>
 </table>
@@ -202,8 +583,102 @@ font-style: inherit;">=</span>data)</span></code></pre></div>
 </div>
 </div>
 </div>
+<div id="56a31b2e" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> plotly.figure_factory <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> ff</span>
+<span id="cb9-2"></span>
+<span id="cb9-3">theta_posterior <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> fit.stan_variable(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"theta"</span>)</span>
+<span id="cb9-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create distplot with curve_type set to 'normal'</span></span>
+<span id="cb9-5">fig <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ff.create_distplot(</span>
+<span id="cb9-6">    [theta_posterior],</span>
+<span id="cb9-7">    [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"posterior_theta"</span>],</span>
+<span id="cb9-8">    show_hist<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>,</span>
+<span id="cb9-9">    bin_size<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span>,</span>
+<span id="cb9-10">    show_rug<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>,</span>
+<span id="cb9-11">)</span>
+<span id="cb9-12"></span>
+<span id="cb9-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Add title</span></span>
+<span id="cb9-14">fig.update_layout(title_text<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Posterior theta distribution"</span>, yaxis<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">dict</span>(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">9</span>]))</span>
+<span id="cb9-15"></span>
+<span id="cb9-16">fig.show()</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>                            <div id="c3a46b7e-b6b4-4614-b5d1-df949cb4b28c" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("c3a46b7e-b6b4-4614-b5d1-df949cb4b28c")) {                    Plotly.newPlot(                        "c3a46b7e-b6b4-4614-b5d1-df949cb4b28c",                        [{"autobinx":false,"histnorm":"probability density","legendgroup":"posterior_theta","marker":{"color":"rgb(31, 119, 180)"},"name":"posterior_theta","opacity":0.7,"x":[0.124847,0.11844,0.143639,0.338143,0.294105,0.215533,0.214348,0.214348,0.214348,0.239507,0.231471,0.273507,0.279745,0.16444,0.164392,0.192221,0.154893,0.178207,0.158362,0.152764,0.152764,0.16755,0.210828,0.151548,0.148395,0.214626,0.231386,0.21507,0.146057,0.253467,0.325991,0.144947,0.160537,0.185228,0.16717,0.276689,0.26849,0.178247,0.151254,0.138478,0.157755,0.302279,0.165047,0.126708,0.267628,0.231854,0.360802,0.385157,0.204858,0.223574,0.141281,0.12297,0.117168,0.152882,0.142818,0.189924,0.154811,0.218058,0.218058,0.16364,0.195294,0.195294,0.196557,0.238007,0.199901,0.16953,0.302319,0.284961,0.255642,0.14819,0.142103,0.143394,0.232938,0.24396,0.223155,0.215922,0.209877,0.209826,0.194614,0.192845,0.187287,0.254337,0.254337,0.26009,0.344282,0.265221,0.175868,0.15189,0.132101,0.147587,0.115063,0.216015,0.216015,0.222142,0.225876,0.123381,0.146821,0.199945,0.23376,0.198764,0.238557,0.208631,0.172381,0.147269,0.16662,0.165257,0.144809,0.154499,0.203523,0.139962,0.0985678,0.119366,0.158377,0.197216,0.268839,0.198147,0.221601,0.241678,0.217454,0.216724,0.216843,0.178216,0.1392,0.180417,0.163458,0.152858,0.152858,0.196503,0.229084,0.153838,0.166822,0.199604,0.184495,0.18523,0.199788,0.23571,0.23571,0.294832,0.258696,0.232618,0.196459,0.18704,0.198329,0.198404,0.198404,0.234845,0.234845,0.267448,0.13067,0.131392,0.244474,0.244474,0.246425,0.214717,0.204471,0.245527,0.237663,0.237663,0.27077,0.223785,0.126275,0.138174,0.153574,0.156615,0.182901,0.142951,0.320724,0.229177,0.226491,0.226491,0.226491,0.204677,0.307241,0.299062,0.228393,0.228393,0.194517,0.184226,0.108769,0.237248,0.225225,0.276449,0.320499,0.278758,0.223694,0.211682,0.245076,0.22524,0.22524,0.212625,0.236571,0.237505,0.296329,0.131603,0.255584,0.255584,0.28305,0.327028,0.139802,0.142393,0.340933,0.300319,0.141558,0.323911,0.310426,0.332535,0.153157,0.204716,0.17995,0.163204,0.223803,0.199476,0.17633,0.165411,0.188103,0.175404,0.139301,0.234304,0.191832,0.251061,0.218357,0.213424,0.224517,0.1129,0.273502,0.223001,0.175459,0.142455,0.162355,0.133033,0.245756,0.245756,0.208051,0.138435,0.155448,0.161824,0.176342,0.295672,0.301418,0.267239,0.326891,0.344841,0.298546,0.26562,0.224561,0.266306,0.237632,0.237632,0.222674,0.276664,0.277107,0.102441,0.152889,0.152889,0.171978,0.181431,0.147558,0.142709,0.142709,0.227208,0.20955,0.208662,0.235861,0.230565,0.24893,0.226761,0.263788,0.199647,0.154373,0.145864,0.195242,0.205099,0.250821,0.250821,0.248979,0.13006,0.347538,0.263078,0.134352,0.163787,0.175064,0.166912,0.169184,0.158328,0.167736,0.138478,0.164831,0.182384,0.257693,0.230259,0.195493,0.171247,0.181502,0.178322,0.180247,0.152356,0.18421,0.174703,0.211106,0.166889,0.196337,0.229451,0.229515,0.164661,0.18894,0.12824,0.157991,0.196982,0.172586,0.15622,0.171888,0.187634,0.191571,0.195169,0.23897,0.205286,0.21961,0.238132,0.216705,0.221137,0.231942,0.255763,0.197208,0.238725,0.164833,0.213869,0.213869,0.290958,0.173362,0.1349,0.114732,0.138708,0.139299,0.154583,0.154583,0.133437,0.242781,0.23739,0.219742,0.216438,0.22066,0.110753,0.133246,0.142823,0.148308,0.182709,0.264708,0.272127,0.209323,0.139074,0.137359,0.220101,0.220101,0.2313,0.220202,0.195957,0.197782,0.180056,0.273702,0.322147,0.234794,0.341787,0.293567,0.299253,0.261507,0.274062,0.274062,0.108514,0.125018,0.19347,0.243697,0.254474,0.254474,0.235229,0.279404,0.388993,0.265813,0.241107,0.262715,0.278454,0.190048,0.190048,0.199742,0.269418,0.172689,0.232816,0.307125,0.136612,0.197527,0.211801,0.226143,0.199343,0.163478,0.280556,0.280556,0.211289,0.236648,0.251889,0.338702,0.257908,0.209098,0.132571,0.127927,0.103668,0.145653,0.188211,0.210362,0.210362,0.226327,0.231534,0.224632,0.22321,0.0954583,0.117072,0.157697,0.25685,0.287216,0.319354,0.143568,0.107005,0.266518,0.265528,0.257337,0.194757,0.193907,0.149477,0.172149,0.145793,0.158035,0.160228,0.133632,0.138744,0.131357,0.201205,0.157611,0.199239,0.239081,0.139871,0.162098,0.125461,0.126389,0.147743,0.219825,0.21637,0.21637,0.319405,0.155517,0.217795,0.217795,0.217795,0.23238,0.21056,0.230999,0.135706,0.178731,0.253902,0.219409,0.214871,0.166824,0.15058,0.188447,0.25046,0.21056,0.174914,0.137748,0.112506,0.132138,0.169113,0.13592,0.163786,0.291789,0.244739,0.207939,0.216533,0.213636,0.223117,0.264045,0.169291,0.236476,0.22724,0.226099,0.23569,0.291466,0.292447,0.173665,0.162371,0.285408,0.209748,0.209748,0.147721,0.142846,0.165809,0.188855,0.193234,0.190413,0.196315,0.239275,0.239275,0.234126,0.225737,0.314216,0.267166,0.262247,0.194742,0.145348,0.163905,0.188452,0.175394,0.229375,0.218893,0.119118,0.189859,0.21873,0.163453,0.128086,0.107329,0.161977,0.303012,0.17712,0.152478,0.249848,0.249848,0.249848,0.249848,0.270217,0.180096,0.251893,0.22591,0.231555,0.160487,0.178888,0.28416,0.276235,0.193894,0.206043,0.255943,0.249204,0.231666,0.244843,0.190631,0.199922,0.224141,0.201096,0.329298,0.310955,0.224527,0.199718,0.182583,0.191681,0.191681,0.191681,0.282382,0.279591,0.339737,0.259758,0.122882,0.161314,0.18398,0.204538,0.201985,0.230042,0.222789,0.210429,0.207585,0.192232,0.106862,0.137923,0.169895,0.297892,0.251776,0.219204,0.216838,0.216838,0.169693,0.205609,0.182888,0.199183,0.228387,0.143788,0.211041,0.218667,0.218667,0.215706,0.216809,0.229331,0.229331,0.229331,0.339576,0.253025,0.185278,0.179687,0.258671,0.218073,0.320788,0.156273,0.267841,0.229946,0.229946,0.198882,0.147159,0.1577,0.160112,0.1509,0.130351,0.207547,0.220674,0.258496,0.334829,0.37955,0.159425,0.240192,0.185188,0.186076,0.268876,0.126887,0.183599,0.193401,0.195613,0.272146,0.233002,0.233504,0.196435,0.166204,0.17524,0.186757,0.173338,0.181981,0.139106,0.16976,0.18593,0.179009,0.214217,0.217722,0.158163,0.182511,0.157648,0.157648,0.182866,0.183323,0.165837,0.125737,0.138465,0.184485,0.185651,0.207942,0.305634,0.155737,0.159838,0.165425,0.295661,0.255859,0.187431,0.164585,0.183814,0.187557,0.116464,0.172702,0.264985,0.201852,0.234789,0.234789,0.224777,0.239572,0.223878,0.197023,0.226853,0.229685,0.125127,0.268368,0.32448,0.261784,0.26037,0.179717,0.203335,0.201131,0.201131,0.220038,0.269587,0.0910045,0.10869,0.219559,0.203037,0.215956,0.229544,0.229544,0.23398,0.201902,0.293063,0.179073,0.16979,0.33244,0.33244,0.228764,0.217017,0.292418,0.239582,0.239582,0.252991,0.198886,0.197537,0.20664,0.136358,0.310311,0.250026,0.297359,0.236702,0.201067,0.16935,0.176664,0.227772,0.239091,0.237472,0.282616,0.162085,0.187783,0.187783,0.171309,0.171309,0.27678,0.191001,0.266162,0.280299,0.162979,0.202582,0.219792,0.216823,0.216564,0.240071,0.136865,0.135915,0.187938,0.255842,0.219546,0.232621,0.196569,0.18818,0.171468,0.269644,0.227795,0.171522,0.171522,0.171522,0.287486,0.306048,0.184775,0.201079,0.241742,0.241742,0.199032,0.118731,0.24978,0.246125,0.247214,0.280147,0.170562,0.301798,0.230154,0.226586,0.208128,0.2264,0.173073,0.173999,0.182386,0.185385,0.195645,0.229952,0.244367,0.252648,0.181887,0.336177,0.336177,0.285774,0.323596,0.260732,0.222827,0.212424,0.142157,0.119158,0.128986,0.158701,0.22418,0.215038,0.221201,0.251622,0.265072,0.217692,0.24009,0.229092,0.196841,0.24847,0.306179,0.131649,0.108339,0.0772695,0.0645582,0.230058,0.240117,0.227758,0.209856,0.209856,0.147679,0.194727,0.235739,0.25729,0.220116,0.220116,0.2115,0.35904,0.137671,0.200008,0.200008,0.257823,0.187067,0.149112,0.144831,0.318804,0.308831,0.304557,0.284413,0.239702,0.193606,0.205234,0.164096,0.270012,0.182873,0.187215,0.188802,0.157679,0.171606,0.186988,0.187974,0.203033,0.202907,0.270101,0.190464,0.231179,0.302383,0.288013,0.27143,0.206343,0.192369,0.192369,0.203101,0.201818,0.234775,0.202903,0.202903,0.21808,0.214203,0.212918,0.161451,0.184905,0.199495,0.236177,0.236177,0.269765,0.256734,0.236893,0.29039,0.305148,0.180192,0.180192,0.193589,0.235097,0.280008,0.167474,0.204218,0.175954,0.190571,0.285008,0.160604,0.183623,0.168103,0.159131,0.219192,0.201062,0.265765,0.221895,0.21195,0.225105,0.216987,0.163219,0.277305,0.166645,0.179424,0.215233,0.210281,0.209132,0.175429,0.182767,0.182767,0.153968,0.167581,0.311715,0.306463,0.227752,0.295836,0.242736,0.221848,0.288707,0.173548,0.124875,0.243163,0.220804,0.220804,0.287833,0.287833,0.335553,0.315099,0.224483,0.206766,0.206766,0.230357,0.228163,0.198175,0.168333,0.201943,0.130399,0.153094,0.163206,0.150589,0.15504,0.202333,0.248521,0.248521,0.190963,0.193931,0.256699,0.280598,0.204102,0.231734,0.283393,0.33975,0.261267,0.333283,0.286683,0.230149,0.19142,0.261207,0.272593,0.232585,0.229243,0.235392,0.235392,0.234447,0.239969,0.191533,0.182429,0.134562,0.158059,0.213444,0.173979,0.188586,0.243763,0.249378,0.212733,0.179136,0.182199,0.182199,0.191028,0.198925,0.192792,0.192792,0.184667,0.197277,0.182811,0.185022,0.181151,0.181151,0.181151,0.18444,0.167736,0.282659,0.157298,0.147157,0.134343,0.155842,0.174956,0.286799,0.229844,0.199397,0.22424,0.223416,0.228794,0.248888,0.261044,0.137982,0.153939,0.204289,0.204289,0.215132,0.167797,0.198195,0.229139,0.2616,0.319315,0.319315,0.267722,0.243932,0.283602,0.214728,0.200419,0.286449,0.171432,0.181656,0.22346,0.199998,0.26719,0.149542,0.273607,0.279165,0.292103,0.13734,0.190017,0.218689,0.193635,0.223102,0.169616,0.175754,0.175754,0.224061,0.159305,0.245555,0.171231,0.257815,0.256159,0.301306,0.21408,0.180299,0.190378,0.190378,0.249239,0.241092,0.260389,0.175128,0.185896,0.162687,0.214423,0.203774,0.206997,0.205995,0.245002,0.255221,0.280274,0.272607,0.245494,0.247206,0.169819,0.207587,0.204096,0.194038,0.197591,0.194396,0.198981,0.168945,0.15409,0.186958,0.322557,0.209098,0.261081,0.216053,0.188817,0.300747,0.300747,0.211137,0.204743,0.139875,0.130215,0.114885,0.133735,0.274928,0.284065,0.262338,0.298755,0.300956,0.132738,0.230712,0.140869,0.140939,0.132727,0.16776,0.195937,0.240362,0.249038,0.230471,0.193761,0.239379,0.245003,0.209759,0.26458,0.274036,0.284392,0.258991,0.0987311,0.172359,0.15344,0.242794,0.244589,0.241476,0.105862,0.122794,0.138355,0.138355,0.143689,0.190375,0.159442,0.223113,0.165847,0.322303,0.216894,0.121674,0.162258,0.157575,0.162049,0.345842,0.266929,0.219527,0.225204,0.18045,0.212252,0.18825,0.237165,0.226183,0.226183,0.150112,0.254974,0.304663,0.182015,0.2615,0.233863,0.129039,0.205363,0.269103,0.242309,0.151213,0.135809,0.147117,0.231701,0.141759,0.197244,0.243913,0.244958,0.130546,0.134391,0.128101,0.229282,0.161552,0.205321,0.21485,0.209082,0.191613,0.155757,0.156326,0.140361,0.157844,0.174906,0.239029,0.19693,0.208024,0.182893,0.152421,0.131613,0.121556,0.132476,0.191318,0.213965,0.213696,0.158274,0.137073,0.149065,0.212828,0.198533,0.212931,0.274977,0.274977,0.244845,0.275327,0.330318,0.192013,0.192013,0.222957,0.193586,0.186291,0.177628,0.177875,0.226047,0.182867,0.210845,0.191809,0.195463,0.195463,0.199672,0.28579,0.162814,0.170817,0.169206,0.162098,0.233822,0.168044,0.205021,0.415172,0.0685665,0.0585654,0.0488504,0.163498,0.179911,0.180461,0.171874,0.235218,0.169273,0.181225,0.288584,0.266216,0.150191,0.184654,0.204434,0.211044,0.143519,0.282359,0.278327,0.317328,0.228477,0.187992,0.188166,0.222,0.182869,0.192342,0.244241,0.219246,0.188925,0.143824,0.180178,0.184639,0.160665,0.240435,0.261086,0.333171,0.286617,0.266805,0.230869,0.308598,0.286988,0.240949,0.186425,0.223126,0.219494,0.214286,0.212202,0.14139,0.145457,0.153729,0.153729,0.189836,0.272927,0.183069,0.188344,0.157343,0.181442,0.171418,0.194259,0.19248,0.170833,0.159303,0.216747,0.197968,0.16261,0.162658,0.154274,0.172039,0.231087,0.246417,0.241633,0.247107,0.16986,0.16986,0.190834,0.20818,0.195717,0.167098,0.177032,0.199609,0.205775,0.225899,0.165093,0.262167,0.248683,0.217043,0.173336,0.212077,0.136126,0.15938,0.140969,0.181175,0.176211,0.158192,0.15048,0.122103,0.178364,0.182232,0.223495,0.284946,0.274404,0.278572,0.277211,0.244088,0.251843,0.251843,0.157801,0.143456,0.165785,0.111605,0.130026,0.172418,0.194883,0.211737,0.176846,0.137657,0.173092,0.241518,0.262668,0.239553,0.235763,0.117738,0.173047,0.155272,0.209522,0.295977,0.206412,0.254197,0.182146,0.260237,0.30677,0.280451,0.210164,0.205765,0.184774,0.305767,0.264249,0.161872,0.151202,0.246902,0.248934,0.23192,0.153652,0.219121,0.315076,0.184045,0.253574,0.148551,0.148551,0.268198,0.254174,0.254174,0.176433,0.144262,0.159565,0.169763,0.169763,0.214075,0.201996,0.135586,0.13991,0.16316,0.199055,0.282265,0.249952,0.274381,0.286759,0.267504,0.303178,0.234406,0.221382,0.191742,0.18852,0.253213,0.279472,0.251909,0.276842,0.216909,0.20276,0.213354,0.216046,0.196515,0.199486,0.271991,0.172087,0.2233,0.188555,0.188343,0.22449,0.22449,0.21601,0.256262,0.260123,0.149346,0.227184,0.227184,0.224324,0.211778,0.16387,0.158446,0.247106,0.227347,0.140748,0.16102,0.154341,0.243651,0.190447,0.217096,0.196942,0.279499,0.199739,0.206206,0.207003,0.189587,0.194951,0.159665,0.186805,0.118697,0.242206,0.25543,0.103952,0.0816632,0.227896,0.162653,0.177917,0.173097,0.243158,0.13667,0.142983,0.158431,0.145483,0.211881,0.2356,0.176167,0.163787,0.163785,0.242675,0.258404,0.25089,0.150125,0.182659,0.153264,0.259831,0.259831,0.186056,0.120678,0.176694,0.176694,0.209005,0.190227,0.13951,0.129415,0.142904,0.126468,0.140471,0.224357,0.23915,0.23915,0.249089,0.215486,0.178412,0.207829,0.118725,0.138122,0.337447,0.19961,0.191976,0.259574,0.219106,0.186493,0.186328,0.190919,0.182459,0.226786,0.187025,0.228751,0.22602,0.110726,0.119649,0.164834,0.173765,0.211426,0.272457,0.258153,0.294692,0.133971,0.238761,0.252776,0.241547,0.162648,0.230507,0.203511,0.357089,0.147008,0.243608,0.280932,0.215005,0.255746,0.209786,0.198457,0.175996,0.23846,0.253815,0.179899,0.186503,0.205459,0.166616,0.14718,0.230045,0.12654,0.114722,0.117171,0.130937,0.192594,0.213728,0.232696,0.174227,0.235091,0.149701,0.157492,0.175335,0.182834,0.198715,0.201645,0.163683,0.223091,0.118774,0.141205,0.115703,0.197384,0.267165,0.206938,0.202801,0.212762,0.209781,0.236176,0.166348,0.190282,0.18152,0.302497,0.299203,0.187116,0.187116,0.271501,0.203454,0.238506,0.168878,0.178433,0.264011,0.236545,0.150693,0.151489,0.181636,0.196689,0.196689,0.175872,0.172823,0.172823,0.193648,0.212101,0.233478,0.147617,0.166799,0.213275,0.244327,0.242265,0.260927,0.260927,0.255155,0.290905,0.171228,0.165674,0.180969,0.198128,0.195965,0.135627,0.205421,0.188844,0.186653,0.196076,0.172981,0.167971,0.16272,0.217267,0.217267,0.167441,0.220025,0.244046,0.167909,0.239437,0.188845,0.213471,0.244358,0.260366,0.199484,0.215912,0.221092,0.200617,0.212712,0.212712,0.212712,0.201945,0.202426,0.208863,0.220903,0.213565,0.251865,0.289881,0.234494,0.170482,0.18033,0.234486,0.236353,0.177683,0.176403,0.224728,0.233558,0.181232,0.145211,0.246733,0.231348,0.204983,0.221909,0.122177,0.131506,0.131506,0.184855,0.231487,0.200252,0.19264,0.245694,0.195192,0.165205,0.172934,0.170008,0.218809,0.190696,0.278157,0.253322,0.159255,0.265556,0.179936,0.168687,0.227363,0.149771,0.149504,0.167596,0.288187,0.288187,0.264799,0.240803,0.240803,0.241986,0.215926,0.215926,0.218499,0.196455,0.161297,0.147811,0.168955,0.120584,0.163778,0.141414,0.143321,0.14096,0.224503,0.202708,0.231493,0.182243,0.182159,0.20727,0.128749,0.13366,0.134661,0.118616,0.166728,0.182644,0.225383,0.274024,0.219554,0.230095,0.266931,0.195937,0.236079,0.189086,0.191533,0.15558,0.190799,0.190799,0.183268,0.262013,0.25967,0.273547,0.274179,0.248492,0.184424,0.204269,0.178129,0.136913,0.127345,0.169942,0.190296,0.183434,0.310952,0.310952,0.26653,0.146715,0.139151,0.132633,0.157246,0.158245,0.164835,0.160023,0.168446,0.159285,0.227821,0.238534,0.268257,0.268257,0.29717,0.278312,0.312613,0.268113,0.237294,0.237671,0.224412,0.178499,0.195578,0.183977,0.207343,0.255254,0.31419,0.368773,0.340138,0.304415,0.23688,0.273298,0.263139,0.224918,0.205076,0.241286,0.175911,0.174847,0.169537,0.244111,0.228542,0.0968585,0.091304,0.104352,0.171463,0.185783,0.20234,0.211516,0.234981,0.227316,0.226334,0.133808,0.117065,0.225058,0.157092,0.147649,0.198627,0.186984,0.17706,0.290111,0.214211,0.219363,0.161166,0.142949,0.130371,0.250641,0.250641,0.284076,0.273396,0.110076,0.138278,0.151362,0.136699,0.246269,0.237852,0.151696,0.131802,0.136009,0.21967,0.216173,0.18314,0.18314,0.200843,0.293335,0.33166,0.33166,0.138396,0.244026,0.327622,0.223311,0.22119,0.157677,0.15072,0.213611,0.134384,0.205578,0.265035,0.296675,0.266397,0.168149,0.226799,0.227452,0.231481,0.160183,0.167269,0.177438,0.168164,0.191943,0.326987,0.368141,0.292857,0.345642,0.217765,0.305456,0.261353,0.270222,0.274561,0.290489,0.176951,0.176219,0.142457,0.125979,0.112723,0.121189,0.111555,0.137221,0.181531,0.167778,0.230445,0.180476,0.123639,0.0945138,0.155683,0.228182,0.235848,0.180605,0.188647,0.184745,0.27548,0.180481,0.217788,0.217788,0.227909,0.181701,0.144156,0.120865,0.128217,0.169794,0.152442,0.161609,0.174911,0.169538,0.206559,0.20429,0.198443,0.196513,0.251085,0.169252,0.169252,0.153328,0.197972,0.168895,0.175226,0.151024,0.150928,0.296502,0.221566,0.182493,0.116502,0.122653,0.178588,0.279267,0.218162,0.213486,0.130341,0.14638,0.136787,0.121782,0.182782,0.183039,0.188101,0.117737,0.132286,0.129917,0.144207,0.122028,0.211487,0.185689,0.221817,0.2201,0.152526,0.168223,0.120541,0.318718,0.270571,0.268044,0.264469,0.189355,0.249312,0.241402,0.241402,0.250626,0.287028,0.244474,0.246026,0.174585,0.2411,0.25242,0.266378,0.269105,0.264768,0.241852,0.170766,0.173641,0.195383,0.177146,0.184817,0.145116,0.218812,0.207848,0.220072,0.227642,0.173215,0.161539,0.211445,0.206902,0.20857,0.152073,0.158665,0.154722,0.154722,0.253116,0.287977,0.262385,0.163033,0.294617,0.2612,0.219926,0.188345,0.212192,0.203921,0.20718,0.184492,0.178952,0.125236,0.183497,0.146079,0.1424,0.197253,0.197253,0.180637,0.225412,0.137997,0.198422,0.173713,0.17316,0.174295,0.197513,0.284189,0.346557,0.104133,0.128995,0.184016,0.1517,0.208741,0.231725,0.244072,0.237712,0.270456,0.239516,0.264154,0.262784,0.280506,0.247246,0.158751,0.172538,0.233659,0.225915,0.145301,0.279874,0.256272,0.209223,0.214073,0.196141,0.124238,0.109301,0.118476,0.109056,0.250312,0.294889,0.28071,0.2225,0.219844,0.190199,0.185933,0.179272,0.229326,0.204471,0.241072,0.226087,0.24641,0.253422,0.253422,0.2288,0.204151,0.275368,0.239075,0.195615,0.156857,0.195941,0.213796,0.213796,0.213796,0.124536,0.124536,0.135543,0.13561,0.108419,0.249207,0.146036,0.223881,0.231862,0.223708,0.184106,0.185616,0.252113,0.257991,0.239343,0.180579,0.209618,0.131076,0.154907,0.166689,0.166689,0.225928,0.225928,0.175496,0.199198,0.213794,0.201953,0.201953,0.183863,0.17788,0.214992,0.214633,0.129569,0.141507,0.185702,0.225338,0.163428,0.22398,0.218449,0.171831,0.185109,0.2373,0.274915,0.206809,0.185759,0.177005,0.1828,0.228607,0.238382,0.167409,0.174155,0.195436,0.211996,0.187019,0.2117,0.172071,0.172071,0.163977,0.171366,0.172335,0.176463,0.21488,0.169759,0.253879,0.216815,0.282244,0.334909,0.260041,0.190346,0.241111,0.19249,0.193262,0.248875,0.263239,0.180132,0.170462,0.178553,0.173413,0.218601,0.216501,0.216501,0.199779,0.223578,0.154223,0.157651,0.169099,0.226151,0.178193,0.187847,0.118455,0.169031,0.161873,0.179437,0.260196,0.25201,0.150156,0.233972,0.232688,0.236698,0.222938,0.217397,0.197775,0.194982,0.22251,0.180088,0.201706,0.208336,0.20133,0.194561,0.22445,0.233009,0.280863,0.241167,0.233072,0.195995,0.243495,0.193834,0.188028,0.188028,0.168271,0.215034,0.32591,0.212174,0.290367,0.196554,0.168473,0.237598,0.160453,0.146486,0.148183,0.141742,0.147945,0.192644,0.188558,0.14601,0.115821,0.157508,0.13591,0.225069,0.223083,0.330169,0.272927,0.248688,0.22914,0.179905,0.200645,0.200645,0.209188,0.223476,0.189401,0.221368,0.136149,0.237204,0.232993,0.236339,0.163202,0.184953,0.1737,0.146804,0.228127,0.181589,0.277242,0.184194,0.206566,0.128256,0.112212,0.158089,0.319768,0.232874,0.162831,0.144416,0.151158,0.146706,0.15058,0.163791,0.163226,0.225254,0.165696,0.117783,0.124722,0.202548,0.202377,0.173694,0.173694,0.186217,0.165863,0.198762,0.231975,0.188849,0.16059,0.171112,0.159068,0.209833,0.199653,0.181472,0.181472,0.393919,0.397865,0.231481,0.122652,0.185826,0.162727,0.273981,0.186818,0.206211,0.202255,0.194019,0.214219,0.273022,0.17749,0.142447,0.185092,0.220774,0.165242,0.199668,0.209605,0.273327,0.319893,0.269601,0.322654,0.176264,0.261319,0.16517,0.164627,0.223183,0.28489,0.322541,0.275186,0.305504,0.177883,0.145584,0.158263,0.142685,0.134268,0.156092,0.171061,0.1434,0.135122,0.173074,0.210478,0.251451,0.198872,0.147983,0.168066,0.166157,0.148288,0.209212,0.188726,0.211557,0.251905,0.193203,0.186411,0.214168,0.169004,0.161256,0.188528,0.186052,0.186052,0.172674,0.213656,0.213657,0.217924,0.160338,0.186671,0.194291,0.187755,0.162376,0.317693,0.304349,0.160315,0.158422,0.153101,0.315895,0.250727,0.157932,0.237199,0.185098,0.234459,0.161868,0.176252,0.28752,0.173548,0.159175,0.21608,0.28043,0.28043,0.267968,0.208008,0.191244,0.210654,0.201153,0.211379,0.22099,0.183868,0.190101,0.1854,0.188162,0.188162,0.218388,0.225221,0.221784,0.285241,0.320208,0.284117,0.290445,0.288939,0.307664,0.297757,0.267164,0.2365,0.140601,0.163488,0.164605,0.165339,0.231446,0.185138,0.180225,0.191004,0.194014,0.183966,0.183966,0.313956,0.229792,0.155656,0.145476,0.185142,0.155549,0.171931,0.202629,0.135246,0.16131,0.165706,0.20563,0.140824,0.237528,0.15822,0.259662,0.214938,0.220893,0.214305,0.273483,0.252425,0.265572,0.223579,0.166806,0.190428,0.179449,0.229614,0.205822,0.170248,0.127463,0.139054,0.159998,0.226248,0.295806,0.252092,0.194564,0.209071,0.195583,0.216839,0.244251,0.225473,0.204077,0.241982,0.225704,0.225704,0.242599,0.213669,0.193258,0.21166,0.29759,0.217622,0.213673,0.224288,0.22962,0.205894,0.20176,0.243857,0.196268,0.167102,0.110042,0.0859301,0.258415,0.258415,0.276495,0.225237,0.189217,0.219604,0.224088,0.182445,0.211003,0.156524,0.148205,0.155543,0.163005,0.161767,0.225961,0.172354,0.209425,0.212414,0.135589,0.107734,0.126876,0.20303,0.205503,0.193432,0.215118,0.214838,0.14497,0.142404,0.161867,0.124636,0.132364,0.133609,0.177874,0.253909,0.187834,0.196172,0.196172,0.196172,0.13072,0.301492,0.313995,0.221813,0.188262,0.253432,0.305953,0.255848,0.23925,0.218563,0.17408,0.169179,0.230397,0.172292,0.19188,0.211822,0.229027,0.121062,0.134765,0.273954,0.185393,0.173516,0.178537,0.200568,0.238132,0.192118,0.192118,0.238722,0.144645,0.16591,0.22526,0.219414,0.179183,0.169877,0.235311,0.253753,0.202762,0.17333,0.205133,0.204402,0.156156,0.158275,0.156098,0.228331,0.232421,0.212773,0.18359,0.175593,0.166591,0.150106,0.145767,0.183943,0.11952,0.149787,0.216392,0.217265,0.216714,0.213003,0.243542,0.230564,0.198949,0.121217,0.125235,0.198156,0.198156,0.213424,0.146249,0.162964,0.175232,0.276363,0.276363,0.252677,0.227357,0.204594,0.204594,0.187483,0.297206,0.251665,0.2622,0.318389,0.255972,0.290201,0.365579,0.231469,0.247607,0.250264,0.103287,0.172765,0.225699,0.238628,0.224584,0.174055,0.177681,0.177033,0.142844,0.162367,0.172885,0.140588,0.14409,0.188226,0.217561,0.218486,0.249037,0.226694,0.226694,0.226694,0.179538,0.204122,0.14219,0.166413,0.179496,0.230707,0.200093,0.211605,0.249233,0.19261,0.236337,0.200771,0.165,0.157569,0.213101,0.213101,0.179889,0.214915,0.199857,0.252191,0.217014,0.192556,0.211231,0.164218,0.21141,0.246469,0.194909,0.187119,0.295108,0.287798,0.25917,0.268557,0.268557,0.210055,0.239538,0.20252,0.147387,0.235319,0.201627,0.236606,0.271262,0.184781,0.220976,0.216771,0.235958,0.122795,0.160265,0.153189,0.152649,0.143659,0.113329,0.172014,0.189581,0.183596,0.139122,0.194665,0.26078,0.248934,0.251637,0.243777,0.249066,0.198595,0.221696,0.173841,0.17461,0.158639,0.174436,0.248524,0.248524,0.265007,0.162987,0.239218,0.268993,0.2993,0.310242,0.259579,0.235911,0.258841,0.191153,0.189575,0.19507,0.214442,0.196962,0.255806,0.25435,0.176872,0.214867,0.212778,0.200029,0.212069,0.226304,0.21876,0.217761,0.189137,0.215442,0.208108,0.213914,0.285803,0.299834,0.266188,0.266335,0.277976,0.245641,0.18398,0.275791,0.194992,0.205555,0.205214,0.205369,0.205984,0.176629,0.179951,0.213546,0.36845,0.158994,0.136395,0.146308,0.12415,0.147038,0.137943,0.132348,0.191734,0.17598,0.185253,0.224359,0.204126,0.194639,0.217098,0.160691,0.227943,0.233114,0.233114,0.219079,0.178073,0.238259,0.228033,0.273979,0.194606,0.231461,0.172398,0.186516,0.283608,0.182747,0.114841,0.20398,0.177189,0.112039,0.19155,0.167005,0.175929,0.133732,0.103647,0.0983931,0.261264,0.261264,0.256954,0.281699,0.281699,0.335411,0.177776,0.227207,0.177988,0.281135,0.325834,0.221973,0.160025,0.170969,0.167892,0.166009,0.170741,0.147935,0.1114,0.115984,0.156909,0.228056,0.261292,0.206228,0.213657,0.21376,0.213988,0.218603,0.212392,0.292727,0.243763,0.291217,0.142225,0.154439,0.166358,0.148095,0.192822,0.21041,0.282823,0.254885,0.164472,0.138411,0.234138,0.242939,0.242939,0.25124,0.278995,0.278995,0.298287,0.303598,0.312011,0.160659,0.169876,0.173409,0.16779,0.143525,0.20875,0.20875,0.275927,0.249089,0.165739,0.255037,0.19237,0.21302,0.19663,0.198499,0.193016,0.264359,0.282035,0.143511,0.182136,0.174458,0.174458,0.302785,0.250905,0.236286,0.128604,0.129097,0.123862,0.144004,0.148758,0.170449,0.170449,0.177287,0.264036,0.217914,0.251484,0.321866,0.166823,0.129495,0.250482,0.188989,0.220881,0.185217,0.209921,0.206304,0.205843,0.290654,0.273225,0.271435,0.244097,0.289729,0.197391,0.145835,0.260103,0.237793,0.276582,0.249796,0.198866,0.216205,0.262556,0.242754,0.150172,0.246038,0.21224,0.194222,0.166825,0.177408,0.145805,0.336092,0.306891,0.374198,0.191166,0.270764,0.280994,0.280994,0.184591,0.221882,0.222907,0.1882,0.197445,0.114419,0.236238,0.109386,0.225206,0.228724,0.228724,0.156954,0.181101,0.286728,0.202706,0.229459,0.229459,0.229459,0.238325,0.199299,0.201069,0.198511,0.156851,0.139078,0.158205,0.223976,0.238695,0.260534,0.269868,0.241658,0.204389,0.197761,0.184059,0.219238,0.239462,0.211885,0.252502,0.266169,0.197027,0.294804,0.285471,0.184472,0.171567,0.204256,0.287165,0.292143,0.2843,0.2843,0.272503,0.203771,0.157601,0.138091,0.129393,0.144055,0.135863,0.135863,0.187987,0.218456,0.209302,0.189099,0.219319,0.239103,0.182121,0.208446,0.201584,0.144424,0.188423,0.203097,0.267326,0.234947,0.244767,0.149161,0.152419,0.21727,0.255049,0.202082,0.147585,0.197444,0.204794,0.140281,0.216475,0.152577,0.171377,0.185138,0.205828,0.135094,0.212323,0.164581,0.180367,0.126076,0.176239,0.284934,0.177742,0.198628,0.183693,0.183693,0.211689,0.211689,0.280039,0.187857,0.211609,0.122099,0.133138,0.146603,0.163084,0.143894,0.205275,0.18121,0.178973,0.174962,0.151273,0.151458,0.110636,0.105801,0.123844,0.167036,0.18233,0.194028,0.178145,0.228629,0.246291,0.167192,0.195465,0.170763,0.232129,0.208061,0.193584,0.198639,0.198639,0.260329,0.326492,0.299227,0.264867,0.258199,0.258199,0.234953,0.231428,0.150614,0.167555,0.210954,0.201441,0.188882,0.259168,0.192831,0.186368,0.194508,0.193333,0.265974,0.207261,0.203753,0.150238,0.218143,0.291537,0.173579,0.220142,0.234406,0.142832,0.206825,0.196052,0.207391,0.265477,0.170417,0.329811,0.358423,0.366651,0.136742,0.178198,0.210127,0.137193,0.263676,0.233883,0.228775,0.207716,0.236376,0.249671,0.249671,0.195757,0.21918,0.166722,0.252824,0.21694,0.219926,0.166042,0.145419,0.153824,0.199204,0.237309,0.187742,0.185687,0.238002,0.198738,0.187665,0.226659,0.236414,0.225642,0.229614,0.205723,0.236113,0.221683,0.172156,0.172156,0.211996,0.229545,0.189859,0.249284,0.270845,0.151142,0.211939,0.255375,0.201836,0.160414,0.206173,0.236077,0.236985,0.241307,0.235243,0.156065,0.158585,0.210802,0.205912,0.196074,0.232397,0.197063,0.244592,0.195486,0.241696,0.193416,0.213658,0.167509,0.19118,0.18895,0.224134,0.218087,0.158127,0.218996,0.189257,0.207482,0.192209,0.158186,0.217338,0.178415,0.118163,0.122126,0.103539,0.0943611,0.114691,0.122205,0.315194,0.346743,0.210802,0.210802,0.200087,0.261524,0.245734,0.288485,0.135728,0.142447,0.249504,0.2122,0.204487,0.210551,0.209207,0.234773,0.194914,0.20492,0.232369,0.240837,0.231309,0.174436,0.209818,0.193137,0.210861,0.19085,0.208274,0.191362,0.201404,0.174093,0.174187,0.221669,0.221669,0.204671,0.204258,0.214866,0.230453,0.175426,0.168012,0.179191,0.189062,0.234741,0.225398,0.224246,0.220893,0.204105,0.218402,0.189699,0.243577,0.243601,0.236989,0.243873,0.192901,0.231275,0.148225,0.149386,0.130456,0.147671,0.191037,0.216782,0.221536,0.147345,0.256662,0.259055,0.141379,0.141379,0.146016,0.189414,0.18732,0.159361,0.186029,0.310791,0.292931,0.375708,0.38347,0.328526,0.244108,0.179928,0.24645,0.249113,0.234946,0.247013,0.258281,0.256807,0.279547,0.211795,0.210127,0.266958,0.183135,0.17923,0.172116,0.216315,0.201955,0.22953,0.194741,0.159475,0.165117,0.274548,0.270264,0.254857,0.235809,0.232037,0.232037,0.175473,0.252151,0.203216,0.30416,0.34935,0.28776,0.221013,0.206085,0.22404,0.199153,0.108045,0.104372,0.186777,0.285123,0.331611,0.313095,0.145182,0.151147,0.183237,0.246125,0.188659,0.224691,0.192073,0.23054,0.145951,0.147431,0.247163,0.179564,0.220067,0.19213,0.194059,0.19471,0.216974,0.277997,0.283506,0.235244,0.234627,0.219113,0.147203,0.213562,0.133587,0.146586,0.219991,0.176968,0.189459,0.136244,0.223121,0.145713,0.24597,0.164962,0.233613,0.294175,0.282561,0.219046,0.184245,0.248096,0.202431,0.206623,0.204482,0.212148,0.150475,0.139435,0.313786,0.381846,0.349145,0.157287,0.251736,0.258053,0.15877,0.170477,0.233677,0.190102,0.192958,0.289047,0.274595,0.319077,0.296982,0.163513,0.316807,0.118606,0.142501,0.205032,0.179472,0.104852,0.0822406,0.140223,0.154084,0.139209,0.123425,0.141961,0.363438,0.326591,0.191643,0.215431,0.179989,0.254761,0.254761,0.159402,0.167511,0.174397,0.173606,0.172952,0.149925,0.155515,0.237845,0.262727,0.17636,0.176463,0.167675,0.263451,0.263451,0.263398,0.249864,0.176062,0.223117,0.242711,0.193971,0.188425,0.190531,0.209141,0.230621,0.192191,0.295445,0.321489,0.324351,0.314652,0.281763,0.286714,0.197431,0.280951,0.134792,0.142404,0.134173,0.135267,0.138483,0.139761,0.157835,0.175496,0.201482,0.171333,0.223864,0.1331,0.146394,0.194466,0.258346,0.283261,0.179438,0.244331,0.229587,0.300899,0.2736,0.24621,0.250416,0.25797,0.169649,0.237021,0.17443,0.196993,0.263936,0.281015,0.160316,0.2014,0.240187,0.241831,0.196131,0.239171,0.227817,0.217281,0.214565,0.195653,0.216215,0.212923,0.211047,0.136282,0.127925,0.165393,0.27622,0.272512,0.308824,0.28971,0.129037,0.184495,0.219227,0.176258,0.206397,0.20178,0.21333,0.198109,0.22569,0.238029,0.241722,0.242464,0.197639,0.169255,0.160801,0.163948,0.21027,0.165109,0.226788,0.197541,0.145468,0.200642,0.174844,0.263151,0.257355,0.149832,0.138202,0.173596,0.172933,0.182892,0.211471,0.246613,0.200743,0.174505,0.141326,0.133684,0.170812,0.25803,0.183726,0.262769,0.162652,0.145831,0.218058,0.148341,0.185931,0.17774,0.24246,0.247673,0.261007,0.292077,0.278474,0.278474,0.254534,0.188862,0.187074,0.206341,0.198844,0.225698,0.20387,0.204018,0.241138,0.235743,0.208106,0.24507,0.165266,0.19244,0.187943,0.255457,0.296911,0.296911,0.266082,0.18189,0.172598,0.224336,0.23834,0.176871,0.177639,0.188618,0.190866,0.195993,0.260799,0.167054,0.249917,0.168443,0.166523,0.15752,0.180562,0.27218,0.146322,0.220769,0.167631,0.252,0.27527,0.278607,0.258829,0.278367,0.278367,0.29965,0.179889,0.240905,0.237895,0.24566,0.198531,0.223143,0.223143,0.206476,0.208777,0.125792,0.127757,0.219343,0.222284,0.233214,0.156416,0.231796,0.262636,0.1802,0.214501,0.124968,0.102473,0.122565,0.128939,0.209841,0.14695,0.141775,0.123622,0.238653,0.253355,0.180728,0.221827,0.174703,0.213626,0.198463,0.22594,0.180638,0.216144,0.156377,0.153318,0.152816,0.144206,0.139307,0.144712,0.140256,0.130886,0.181616,0.236126,0.236621,0.199058,0.219351,0.212833,0.271924,0.154508,0.149728,0.220914,0.225549,0.220646,0.186459,0.179178,0.279132,0.150945,0.192609,0.189806,0.205134,0.273816,0.258117,0.209465,0.333221,0.149798,0.140928,0.156853,0.262626,0.214633,0.13476,0.151556,0.149203,0.140789,0.140412,0.137388,0.13751,0.126035,0.113814,0.116337,0.121094,0.138372,0.156764,0.145928,0.142862,0.158844,0.341021,0.211498,0.197559,0.196615,0.225255,0.193819,0.214887,0.107696,0.0918467,0.0910888,0.114087,0.106007,0.0885533,0.110498,0.19178,0.192068,0.252842,0.28798,0.167838,0.163266,0.213007,0.197912,0.21707,0.221105,0.315252,0.282215,0.261572,0.283929,0.278903,0.170298,0.171799,0.202796,0.202796,0.245055,0.168965,0.180248,0.188418,0.187135,0.189647,0.239677,0.187137,0.264057,0.258778,0.207384,0.206447,0.200953,0.240345,0.151162,0.185764,0.261784,0.172521,0.162806,0.164927,0.190074,0.157341,0.17252,0.173499,0.253826,0.210896,0.261957,0.16769,0.261088,0.26108,0.251305,0.188101,0.212926,0.213855,0.201442,0.221907,0.187261,0.159954,0.199309,0.196288,0.227501,0.261581,0.265298,0.262171,0.239383,0.192173,0.269077,0.276153,0.303091,0.200333,0.212637,0.203304,0.20445,0.119284,0.195591,0.232863,0.240542,0.160859,0.233364,0.244056,0.16539,0.221735,0.181335,0.145233,0.160353,0.239486,0.169348,0.219904,0.14076,0.127868,0.213897,0.210024,0.197537,0.156416,0.167646,0.206167,0.163677,0.21939,0.192319,0.192319,0.243289,0.253017,0.20667,0.192834,0.211811,0.171045,0.240367,0.186304,0.229485,0.22541,0.214443,0.219307,0.201026,0.134434,0.115121,0.102713,0.188042,0.253297,0.2363,0.239503,0.225715,0.199587,0.195936,0.236741,0.188811,0.210644,0.234892,0.240562,0.169662,0.166044,0.159596,0.208974,0.193596,0.201945,0.180561,0.174505,0.22107,0.19803,0.231048,0.32916,0.325814,0.270816,0.290261,0.209749,0.207278,0.191291,0.174178,0.200435,0.209606,0.195729,0.289095,0.256596,0.20673,0.233569,0.171371,0.15777,0.199052,0.312354,0.226495,0.226495,0.206274,0.203555,0.289899,0.270361,0.223163,0.25116,0.285595,0.259188,0.187214,0.162595,0.169817,0.164856,0.25239,0.177955,0.195854,0.226946,0.150557,0.213703,0.192405,0.15271,0.225225,0.234028,0.228621,0.210754,0.183567,0.174306,0.246906,0.173919,0.205856,0.157752,0.259742,0.181097,0.174776,0.240037,0.22717,0.194828,0.299678,0.273179,0.269784,0.250769,0.254835,0.264599,0.270496,0.286402,0.342332,0.321042,0.27298,0.263983,0.168335,0.240837,0.169723,0.168718,0.172599,0.243428,0.1885,0.191512,0.220178,0.146791,0.343435,0.343763,0.22757,0.195361,0.22126,0.230307,0.209728,0.16323,0.201861,0.225984,0.221889,0.217741,0.1928,0.217372,0.292523,0.125691,0.115409,0.120797,0.205114,0.19017,0.183011,0.185178,0.259112,0.187415,0.18403,0.165703,0.213206,0.213686,0.236834,0.23382,0.278552,0.25221,0.201545,0.207783,0.288064,0.310394,0.214544,0.158001,0.222101,0.223166,0.203311,0.203866,0.210113,0.198694,0.17524,0.208497,0.192568,0.239828,0.16295,0.257128,0.166965,0.193912,0.211175,0.224533,0.209226,0.198546,0.193228,0.249125,0.196804,0.156362,0.149443,0.145093,0.175984,0.184937,0.247183,0.251024,0.270521,0.274457,0.297338,0.27522,0.2741,0.280134,0.275303,0.296677,0.339254,0.161962,0.320138,0.17456,0.0667692,0.0554634,0.0679595,0.0631102,0.0774946,0.091137,0.0987134,0.0870664,0.103349,0.212591,0.180991,0.186069,0.242663,0.184617,0.251763,0.199071,0.164109,0.166207,0.21706,0.197294,0.261283,0.300632,0.189094,0.178378,0.272502,0.246785,0.236683,0.243483,0.177969,0.201739,0.220357,0.22176,0.207733,0.181121,0.122093,0.18802,0.100701,0.149766,0.163916,0.157547,0.14108,0.208896,0.189178,0.240949,0.198477,0.121315,0.131884,0.129094,0.123627,0.135131,0.128598,0.126181,0.132084,0.124815,0.116092,0.126965,0.306384,0.296902,0.292555,0.16665,0.249374,0.324312,0.279651,0.221428,0.200804,0.22097,0.224001,0.174114,0.160218,0.258105,0.170975,0.168353,0.19199,0.241473,0.238743,0.176262,0.180922,0.167296,0.164686,0.154576,0.154326,0.155921,0.150929,0.158139,0.158862,0.281044,0.160688,0.242783,0.251941,0.261291,0.183372,0.174995,0.243987,0.24777,0.233524,0.171376,0.203787,0.24385,0.246421,0.2481,0.261796,0.230931,0.141624,0.191073,0.235897,0.208611,0.203003,0.133895,0.248367,0.154398,0.144129,0.203435,0.166251,0.206904,0.176996,0.186374,0.194987,0.285933,0.268046,0.204875,0.197917,0.170756,0.180585,0.22639,0.170374,0.165129,0.157158,0.157444,0.227846,0.17446,0.212941,0.195965,0.21054,0.153869,0.154717,0.240098,0.20635,0.274747,0.191123,0.221099,0.164599,0.194476,0.227102,0.148522,0.289944,0.346273,0.250248,0.251724,0.114962,0.0592784],"xaxis":"x","xbins":{"end":0.415172,"size":0.01,"start":0.0488504},"yaxis":"y","type":"histogram"},{"legendgroup":"posterior_theta","marker":{"color":"rgb(31, 119, 180)"},"mode":"lines","name":"posterior_theta","showlegend":false,"x":[0.0488504,0.0495830432,0.050315686400000004,0.051048329600000004,0.051780972800000005,0.052513616,0.0532462592,0.0539789024,0.0547115456,0.0554441888,0.056176832,0.056909475200000004,0.0576421184,0.058374761600000005,0.0591074048,0.059840048,0.0605726912,0.0613053344,0.0620379776,0.0627706208,0.063503264,0.0642359072,0.06496855039999999,0.0657011936,0.0664338368,0.06716648,0.0678991232,0.0686317664,0.0693644096,0.0700970528,0.070829696,0.0715623392,0.0722949824,0.0730276256,0.0737602688,0.074492912,0.0752255552,0.0759581984,0.0766908416,0.0774234848,0.078156128,0.0788887712,0.0796214144,0.0803540576,0.0810867008,0.081819344,0.08255198720000001,0.0832846304,0.0840172736,0.08474991679999999,0.08548256,0.0862152032,0.0869478464,0.0876804896,0.0884131328,0.08914577600000001,0.0898784192,0.0906110624,0.09134370559999999,0.0920763488,0.092808992,0.0935416352,0.0942742784,0.0950069216,0.0957395648,0.096472208,0.0972048512,0.09793749439999999,0.0986701376,0.0994027808,0.100135424,0.1008680672,0.10160071039999999,0.1023333536,0.1030659968,0.10379864,0.10453128319999999,0.1052639264,0.10599656959999999,0.1067292128,0.107461856,0.10819449919999999,0.1089271424,0.1096597856,0.1103924288,0.11112507199999999,0.1118577152,0.11259035839999999,0.11332300159999999,0.1140556448,0.114788288,0.1155209312,0.1162535744,0.1169862176,0.11771886079999999,0.118451504,0.11918414719999999,0.11991679039999999,0.1206494336,0.1213820768,0.12211472,0.1228473632,0.1235800064,0.12431264959999999,0.12504529279999999,0.12577793599999998,0.12651057919999997,0.12724322240000002,0.12797586560000002,0.1287085088,0.129441152,0.1301737952,0.1309064384,0.13163908159999999,0.13237172479999998,0.13310436799999997,0.1338370112,0.13456965440000002,0.1353022976,0.1360349408,0.136767584,0.1375002272,0.13823287039999999,0.13896551359999998,0.1396981568,0.1404308,0.14116344320000002,0.1418960864,0.1426287296,0.1433613728,0.144094016,0.14482665919999999,0.14555930239999998,0.1462919456,0.1470245888,0.14775723200000002,0.1484898752,0.1492225184,0.1499551616,0.1506878048,0.15142044799999999,0.1521530912,0.1528857344,0.1536183776,0.1543510208,0.155083664,0.1558163072,0.1565489504,0.1572815936,0.15801423679999999,0.15874687999999998,0.1594795232,0.1602121664,0.1609448096,0.1616774528,0.162410096,0.1631427392,0.1638753824,0.16460802559999999,0.16534066879999998,0.166073312,0.1668059552,0.1675385984,0.1682712416,0.1690038848,0.169736528,0.1704691712,0.17120181439999999,0.17193445759999998,0.1726671008,0.173399744,0.17413238720000002,0.1748650304,0.1755976736,0.1763303168,0.17706296,0.17779560319999999,0.17852824639999998,0.17926088959999997,0.17999353279999997,0.18072617600000002,0.1814588192,0.1821914624,0.1829241056,0.1836567488,0.18438939199999999,0.18512203519999998,0.18585467839999997,0.18658732159999997,0.18731996480000002,0.188052608,0.1887852512,0.1895178944,0.1902505376,0.19098318079999999,0.19171582399999998,0.19244846719999997,0.19318111039999997,0.19391375360000002,0.1946463968,0.19537904,0.1961116832,0.1968443264,0.19757696959999999,0.19830961279999998,0.19904225600000003,0.19977489919999997,0.20050754240000002,0.2012401856,0.2019728288,0.202705472,0.2034381152,0.20417075839999999,0.20490340159999998,0.20563604480000003,0.20636868799999997,0.20710133120000002,0.2078339744,0.2085666176,0.2092992608,0.210031904,0.21076454719999999,0.21149719039999998,0.21222983360000003,0.21296247679999997,0.21369512000000002,0.21442776319999995,0.2151604064,0.2158930496,0.2166256928,0.21735833599999999,0.21809097919999998,0.21882362239999997,0.21955626559999997,0.22028890880000002,0.22102155199999995,0.2217541952,0.2224868384,0.2232194816,0.22395212479999999,0.22468476799999998,0.22541741119999997,0.22615005439999997,0.22688269760000002,0.22761534079999995,0.228347984,0.2290806272,0.2298132704,0.23054591359999999,0.23127855679999998,0.23201119999999997,0.23274384319999997,0.23347648640000002,0.23420912959999995,0.2349417728,0.235674416,0.2364070592,0.23713970239999999,0.23787234559999998,0.23860498879999997,0.23933763199999997,0.24007027520000002,0.24080291839999995,0.2415355616,0.2422682048,0.243000848,0.24373349119999999,0.24446613439999998,0.24519877759999997,0.24593142079999997,0.24666406400000002,0.24739670719999995,0.2481293504,0.2488619936,0.2495946368,0.25032728,0.2510599232,0.2517925664,0.25252520959999997,0.2532578528,0.25399049599999995,0.2547231392,0.2554557824,0.2561884256,0.2569210688,0.257653712,0.2583863552,0.25911899839999997,0.25985164159999996,0.26058428479999995,0.261316928,0.2620495712,0.2627822144,0.2635148576,0.2642475008,0.264980144,0.26571278719999997,0.26644543039999996,0.26717807359999995,0.2679107168,0.26864336,0.2693760032,0.2701086464,0.2708412896,0.2715739328,0.27230657599999997,0.27303921919999996,0.27377186239999995,0.2745045056,0.2752371488,0.275969792,0.2767024352,0.2774350784,0.2781677216,0.27890036479999997,0.27963300799999996,0.2803656512,0.2810982944,0.2818309376,0.2825635808,0.283296224,0.2840288672,0.2847615104,0.28549415359999997,0.28622679679999996,0.28695944,0.2876920832,0.2884247264,0.2891573696,0.2898900128,0.290622656,0.2913552992,0.29208794239999997,0.29282058559999996,0.2935532288,0.294285872,0.2950185152,0.2957511584,0.2964838016,0.2972164448,0.297949088,0.29868173119999997,0.2994143744,0.3001470176,0.3008796608,0.301612304,0.3023449472,0.3030775904,0.3038102336,0.3045428768,0.30527552,0.3060081632,0.30674080639999995,0.3074734496,0.3082060928,0.308938736,0.3096713792,0.31040402240000003,0.3111366656,0.31186930879999997,0.312601952,0.3133345952,0.3140672384,0.3147998816,0.3155325248,0.316265168,0.3169978112,0.31773045440000003,0.3184630976,0.3191957408,0.31992838399999995,0.3206610272,0.3213936704,0.3221263136,0.3228589568,0.32359160000000003,0.3243242432,0.32505688639999997,0.3257895296,0.3265221728,0.327254816,0.32798745919999994,0.3287201024,0.3294527456,0.3301853888,0.33091803200000003,0.3316506752,0.33238331839999996,0.33311596159999995,0.3338486048,0.334581248,0.3353138912,0.3360465344,0.3367791776,0.3375118208,0.33824446399999997,0.3389771072,0.3397097504,0.3404423936,0.34117503679999994,0.34190768,0.3426403232,0.3433729664,0.34410560960000003,0.3448382528,0.34557089599999996,0.34630353919999995,0.3470361824,0.3477688256,0.3485014688,0.34923411200000004,0.3499667552,0.3506993984,0.35143204159999997,0.3521646848,0.352897328,0.3536299712,0.35436261439999994,0.3550952576,0.3558279008,0.356560544,0.35729318720000003,0.3580258304,0.35875847359999996,0.35949111679999995,0.36022376,0.3609564032,0.3616890464,0.36242168960000004,0.3631543328,0.363886976,0.36461961919999997,0.3653522624,0.3660849056,0.3668175488,0.36755019199999994,0.3682828352,0.3690154784,0.3697481216,0.37048076480000003,0.371213408,0.37194605119999996,0.37267869439999995,0.3734113376,0.3741439808,0.374876624,0.37560926720000004,0.3763419104,0.3770745536,0.37780719679999997,0.37853984,0.3792724832,0.38000512639999995,0.3807377696,0.3814704128,0.382203056,0.3829356992,0.38366834240000003,0.38440098559999997,0.38513362879999996,0.38586627199999995,0.3865989152,0.3873315584,0.3880642016,0.3887968448,0.389529488,0.3902621312,0.39099477439999997,0.3917274176,0.3924600608,0.39319270399999995,0.3939253472,0.3946579904,0.3953906336,0.3961232768,0.39685592000000003,0.39758856319999997,0.39832120639999996,0.3990538496,0.3997864928,0.400519136,0.4012517792,0.4019844224,0.4027170656,0.4034497088,0.40418235199999997,0.4049149952,0.4056476384,0.40638028159999995,0.4071129248,0.407845568,0.4085782112,0.4093108544,0.41004349760000003,0.41077614079999997,0.41150878399999996,0.4122414272,0.4129740704,0.4137067136,0.4144393568],"xaxis":"x","y":[0.041741679292905544,0.04460502904820692,0.047514691467138236,0.05045628165123167,0.05341446944776647,0.056373163935901055,0.059315733109838856,0.062225257810130954,0.06508481772506801,0.06787780595552903,0.07058826726119252,0.0732012537461393,0.07570319046716038,0.07808224233173972,0.08032867276742811,0.0824351840579301,0.08439722901198336,0.08621328380351656,0.087885072422577,0.08941773421256083,0.09081992742453802,0.09210386355519212,0.0932852693904436,0.09438327607173651,0.09542023703974827,0.09642147928293757,0.09741499481209223,0.09843108158318822,0.0995019450920131,0.10066127346970885,0.10194380004024711,0.10338486790145514,0.10502001112680874,0.10688456664704934,0.10901332977477785,0.11144026472096487,0.11419827938003455,0.1173190712076158,0.12083304827363378,0.12476932664426797,0.1291558022363849,0.1340192923065019,0.13938573889143777,0.14528046391420116,0.15172846340503113,0.15875472645436767,0.16638456319214068,0.1746439253436912,0.18355970279917613,0.19315998018436886,0.20347423864877534,0.21453348997932714,0.22637033266414797,0.23901892260031557,0.25251485466039025,0.266894955172413,0.28219698936752596,0.2984592918264228,0.3157203317146439,0.3340182279371833,0.35339023207288306,0.37387219889741685,0.3954980653330938,0.41829935868302776,0.44230475398117863,0.4675396982455519,0.49402611645159783,0.5217822103010835,0.550822356557992,0.5811571071096295,0.6127932882665181,0.6457341924240472,0.6799798513429601,0.7155273771997943,0.7523713553927897,0.7905042719736788,0.8299169585406718,0.8705990384173914,0.9125393598190316,0.9557264042611983,1.0001486614331738,1.0457949648365288,1.092654785373685,1.1407184824699848,1.1899775139818376,1.2404246069072087,1.2920538906839611,1.3448609936471887,1.398843101132569,1.4539989709710068,1.5103288990176935,1.5678346242573766,1.6265191603250226,1.6863865383785113,1.7474414455312672,1.8096887438073417,1.8731328570374737,1.9377770173732212,2.0036223691243014,2.070666935249395,2.1389044607402146,2.2083231568951476,2.2789043805410896,2.3506212920133565,2.423437544490979,2.4973060644560823,2.5721679879932733,2.6479518198434264,2.7245728811702237,2.801933107632371,2.8799212514949684,2.9584135302611205,3.037274749949019,3.1163599141462606,3.1955163109773004,3.274586049887429,3.3534089995503753,3.431826058182927,3.5096826690517706,3.58683247791667,3.6631410164241487,3.738489286791553,3.8127771190857676,3.8859261734054886,3.9578824655016764,4.028618305775132,4.098133557890159,4.166456143927668,4.2336417473459775,4.29977269211064,4.364956005138439,4.429320698514387,4.493014336576243,4.556198979719905,4.619046620527122,4.681734247547297,4.744438686937625,4.807331381559562,4.8705732706650995,4.9343099308634555,4.998667130783119,5.063746938127652,5.129624499285502,5.1963455890950625,5.263925002733503,5.332345834016544,5.401559655734169,5.471487589048705,5.542022221424418,5.613030306927955,5.6843561597775665,5.755825632336508,5.827250552788618,5.898433485811639,5.969172671839548,6.0392669970364805,6.108520846836068,6.176748700708514,6.2437793345000765,6.30945950900172,6.373657039036275,6.436263155959163,6.497194097632437,6.556391883186819,6.613824254685174,6.669483793529795,6.723386245421776,6.775568113126772,6.826083600423255,6.875001012572699,6.9223987376396385,6.968360948223068,7.012973173959163,7.0563179009690495,7.098470354869577,7.139494618871006,7.179440227896625,7.218339363859696,7.2562047567343715,7.2930283715746285,7.328780934068492,7.36341231758803,7.39685278412625,7.429015041135209,7.459797047219683,7.489085472933307,7.516759699501705,7.542696218931619,7.566773284266698,7.588875649139017,7.608899231485479,7.626755537413741,7.64237568762211,7.655713900263126,7.666750300331219,7.675492946077007,7.681978987042673,7.686274895419906,7.688475741822995,7.688703517446193,7.687104536055813,7.683845980424272,7.679111687658348,7.673097295393397,7.666004895001394,7.658037357811694,7.649392514963219,7.640257380121156,7.63080260630303,7.6211773631065025,7.611504808623441,7.601878311482627,7.59235855332771,7.582971611471595,7.573708086633664,7.564523302972637,7.555338568673886,7.546043446834688,7.536498950030845,7.52654153936672,7.515987781459708,7.504639495865726,7.492289211768449,7.478725746789572,7.46373972259864,7.447128841267067,7.428702762320444,7.408287442174476,7.38572882383709,7.360895794009715,7.333682355546833,7.304008994187209,7.271823248211112,7.237099517033144,7.199838168771504,7.160064026837604,7.117824331137209,7.073186280366688,7.026234268164099,6.977066927740565,6.925794097430869,6.872533813806089,6.817409430095936,6.760546946189415,6.7020726229570124,6.642110938564635,6.580782928328626,6.518204932965944,6.45448776328973,6.389736272956964,6.324049315261538,6.257520045651887,6.190236519114801,6.12228252125074,6.053738564183868,5.9846829737467715,5.915192992899411,5.845345828206526,5.775219571386902,5.704893936267849,5.634450762583323,5.563974251432718,5.493550912223986,5.42326921681447,5.353218972523032,5.283490440899236,5.214173242809164,5.145355101835544,5.077120486612651,5.009549218111798,4.942715109824573,4.876684707215339,4.811516187875612,4.747258475826882,4.683950612848857,4.621621417138804,4.560289445693646,4.499963262258758,4.440641998209067,4.382316180015016,4.3249687846155345,4.26857647363096,4.21311094934656,4.158540370124226,4.104830760570901,4.051947352503341,3.9998557964584687,3.9485231900479842,3.8979188785581176,3.848014994453629,3.7987867153609787,3.7502122340966024,3.7022724487284457,3.654950394831517,3.6082304553347346,3.562097394996468,3.516535275991817,3.4715263178410205,3.427049768577479,3.3830808544168263,3.3395898721862474,3.296541482521724,3.2538942526316137,3.211600485709739,3.1696063604513554,3.127852389274045,3.086274188537041,3.044803539067002,3.003369701398319,2.96190093801393,2.9203261851189435,2.8785768095464124,2.8365883825789,2.79430240189541,2.7516678954770772,2.708642846917816,2.665195389836245,2.621304729501574,2.576961761806188,2.532169372725733,2.486942414762167,2.441307369937239,2.3953017211042598,2.3489730641495967,2.3023780026261775,2.2555808731630624,2.2086523544033505,2.16166801413054,2.1147068486559366,2.0678498655754103,2.0211787558794194,1.9747746944229947,1.928717299311421,1.883083771268808,1.8379482240023652,1.7933812064436172,1.7494494080225798,1.7062155292705377,1.6637382924627233,1.622072561053776,1.5812695325920316,1.5413769677997426,1.5024394186461563,1.4644984204858906,1.427592617544829,1.3917577969707002,1.3570268139956725,1.3234293990812618,1.290991846776501,1.2597365949320463,1.229681711385627,1.2008403127981453,1.173219946550991,1.1468219711600633,1.1216409732550816,1.0976642596528545,1.074871461373142,1.0532342826743806,1.0327164225079775,1.0132736884914368,0.9948543149601278,0.9773994873208862,0.960844065289206,0.9451174881541295,0.930144836479901,0.9158480170821113,0.902147032106675,0.8889612889063457,0.8762109053639283,0.8638179654538947,0.8517076821479894,0.8398094291239235,0.828057608891938,0.8163923325824364,0.8047598953379693,0.7931130405738313,0.7814110158397414,0.7696194321579115,0.7577099470859946,0.7456597989615962,0.733451225501967,0.72107080391564,0.7085087517815352,0.6957582281124776,0.6828146722856,0.6696752150236758,0.6563381905589498,0.6428027727810808,0.629068750889016,0.6151364521922362,0.6010068116139032,0.586681579510381,0.5721636519943764,0.5574575013575499,0.5425696787151529,0.5275093568693677,0.512288878778725,0.4969242760322804,0.4814357223945967,0.465847889778332,0.4501901778146384,0.4344967933644233,0.41880666262454097,0.4031631656622374,0.3876136909493752,0.37220901542906015,0.35700252348240236,0.34204928552433617,0.32740502351453926,0.3131249961242466,0.29926284040093576,0.2858694093284158,0.27299164556747074,0.260671530836261,0.24894514788375574,0.23784188793650754,0.22738383104519197,0.21758532017350762,0.20845274246079232,0.19998452319057103,0.19217132996817596,0.18499647681109224,0.17843651062742188,0.1724619562090848,0.16703819065629139,0.16212641427749155,0.15768468260518115,0.15366896329054305,0.15003418227393642,0.14673522568909098,0.14372786729916304,0.14096959568218795,0.1384203206401658,0.13604294413075668,0.13380378712997285,0.13167286994553132,0.12962404934431343,0.12763502119024894,0.12568720190334057,0.1237655057831757,0.12185803797757797,0.11995572455834341,0.11805190178381596,0.11614188622596369,0.11422254610758119,0.11229189206296905,0.11034870276375285,0.10839219762271408,0.10642176529574825,0.10443675313867416,0.10243631932467119,0.10041934615318969,0.09838441031829619,0.09632980365620122,0.09425359622357868,0.09215373249708018,0.09002815101968877,0.08787491790664831,0.08569236518963766,0.08347922592791922,0.08123475924127363,0.07895885980843698,0.0766521478166139,0.07431603674336482,0.07195277761970803,0.06956547950210928,0.06715810673469721,0.06473545419953697,0.06230310214310549,0.059867352361698954,0.057435147572676204,0.05501397574646089,0.05261176108322363,0.05023674324198045,0.047897346413670105,0.045602039905670085,0.04335919208924343,0.04117691985223852,0.03906293607862104,0.037024398110626716,0.03506776059329742,0.03319863650233861,0.03142167045981771,0.029740428596451405,0.028157309180393324,0.026673477969333847,0.025288831739916404,0.024001992708436868,0.022810335600421342,0.021710047992496855,0.02069622329171999,0.019762984400744078,0.01890363481470133,0.01811083268250657,0.01737678231355871,0.01669343678458573,0.016052704752287573,0.015446654341049816,0.01486770706851244,0.014308815192806551],"yaxis":"y","type":"scatter"}],                        {"barmode":"overlay","hovermode":"closest","legend":{"traceorder":"reversed"},"xaxis":{"anchor":"y2","domain":[0.0,1.0],"zeroline":false},"yaxis":{"anchor":"free","domain":[0.0,1],"position":0.0,"range":[0,9]},"template":{"data":{"scatter":[{"line":{"width":2},"marker":{"size":5},"mode":"markers","opacity":0.7,"type":"scatter"}]},"layout":{"autosize":true,"colorway":["#4477AA","#EE6677","#228833","#CCBB44","#66CCEE","#AA3377","#BBBBBB"],"font":{"color":"#3F5661","size":12},"legend":{"bgcolor":"rgba(255, 255, 255, 0)","font":{"size":12},"traceorder":"normal"},"margin":{"b":60,"l":70,"r":30,"t":60},"paper_bgcolor":"#EFF5F5","plot_bgcolor":"#EFF5F5","title":{"font":{"size":24},"x":0.001,"xanchor":"left","xref":"paper","yanchor":"top"},"xaxis":{"gridcolor":"#BBBBBB","griddash":"dot","gridwidth":0.1,"showgrid":true,"showline":true,"tickfont":{"size":12},"title":{"standoff":10,"text":"X-axis Title","font":{"size":16}},"zeroline":true,"zerolinecolor":"#B7C6CF","zerolinewidth":0.1},"yaxis":{"gridcolor":"#BBBBBB","griddash":"dot","gridwidth":0.1,"showgrid":true,"showline":true,"tickfont":{"size":12},"title":{"standoff":10,"text":"Y-axis Title","font":{"size":16}},"zeroline":true,"zerolinecolor":"#B7C6CF","zerolinewidth":0.1}}},"title":{"text":"Posterior theta distribution"}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('c3a46b7e-b6b4-4614-b5d1-df949cb4b28c');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</div>
+<p>以上のように <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%20E%5B%5Ctheta%5Cvert%20X%5D"> は解析解と近しい結果が出力されます． また，<img src="https://latex.codecogs.com/png.latex?%5Cmathbb%20E%5B%5Ctheta%5Cvert%20X%5D%20%3E%200.2"> となるので，事後分布に基づく政策意思決定として，<img src="https://latex.codecogs.com/png.latex?d%20=%201">, つまりワクチン接種強制という結論が導かれることになります．</p>
 
 
+</section>
 
  ]]></description>
   <guid>https://ryonakagami.github.io/cmdstan_for_regression_monkey/posts/bayesianstatistics101/binomial_toymodel.html</guid>
